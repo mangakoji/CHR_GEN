@@ -4,6 +4,8 @@
 // license by BSD
 //      without font ROM data
 //
+//180426f       :mod for new coding rule
+//2018-03-12m   :mod net naming rule xxxs
 //2018-03-11u   :mod new coding rule like BSD style
 //              :many debug
 //2014-??-??
@@ -14,20 +16,20 @@ module CHR_GEN
     , input tri1        XARST_i
     , input tri1        XHD_i
     , input tri1        XVD_i
-    , input tri0 [7:0]  VRAM_WD_i
-    , input tri0 [9:0]  VRAM_WA_i
+    , input tri0 [7:0]  VRAM_WDs_i
+    , input tri0 [9:0]  VRAM_WAs_i
     , input tri0        VRAM_WE_i
-    , input tri0 [7:0]  CPU_VRAM_WD_i
-    , input tri0 [9:0]  CPU_VRAM_WA_i
+    , input tri0 [7:0]  CPU_VRAM_WDs_i
+    , input tri0 [9:0]  CPU_VRAM_WAs_i
     , input tri0        CPU_VRAM_WE_i
     , input tri0        BUS_OSD_CPU_USE
     , input tri0        BUS_OSD_OFF
-    , input tri0 [11:0] BUS_H_DLY
-    , input tri0 [10:0] BUS_V_DLY
-    , input tri0 [2:0]  BUS_H_MAG
-    , input tri0 [2:0]  BUS_V_MAG
-    , input tri0 [7:0]  BUS_H_SCROLL
-    , input tri0 [7:0]  BUS_V_SCROLL
+    , input tri0 [11:0] BUS_H_DLYs
+    , input tri0 [10:0] BUS_V_DLYs
+    , input tri0 [2:0]  BUS_H_MAGs
+    , input tri0 [2:0]  BUS_V_MAGs
+    , input tri0 [7:0]  BUS_H_SCROLLs
+    , input tri0 [7:0]  BUS_V_SCROLLs
     , input tri0        BUS_FUCHI_MASK
     , output            CHAR_o
     , output            FUCHI_o
@@ -51,185 +53,185 @@ module CHR_GEN
     assign div_xvd = (~ XVD_i) & XVD_D ;
     
 
-    reg [1:0]   HD_DD   ;
+    reg [1:0]   HD_Ds   ;
     reg         HP      ;
-    reg         VD_DD   ;
+    reg         VD_D    ;
     reg         VP      ;
     always @(posedge CK_i or negedge XARST_i)
         if( ~ XARST_i )
         begin
-                HD_DD   <= 'd0 ;
+                HD_Ds   <= 'd0 ;
                 HP      <= 1'b0 ;
-                VD_DD   <= 1'b0 ;
+                VD_D    <= 1'b0 ;
                 VP      <= 1'b0 ;
         end else
         begin
-                HD_DD   <= {HD_DD[0] , div_xhd} ;
-                HP      <= HD_DD[1]  ;
-                if( HD_DD[1] )
-                    VD_DD   <= 1'b0 ;
+                HD_Ds   <= {HD_Ds[0] , div_xhd} ;
+                HP      <= HD_Ds[1]  ;
+                if( HD_Ds[1] )
+                    VD_D   <= 1'b0 ;
                 else if( div_xvd )
-                    VD_DD   <= 1'b1 ;
-                VP <= HD_DD[1] &  VD_DD ;
+                    VD_D   <= 1'b1 ;
+                VP <= HD_Ds[1] &  VD_D ;
         end
 
-    reg [11:0]  HDLY_CTR    ;
-    reg         HST         ;
-    reg [ 2:0]  HST_D       ;
-    reg [11:0]  VDLY_CTR    ;
-    reg         VST         ;
-    reg [ 2 :0] VST_D       ;
+    reg [11:0]  HDLY_CTRs    ;
+    reg         HST          ;
+    reg [ 2:0]  HST_Ds       ;
+    reg [11:0]  VDLY_CTRs    ;
+    reg         VST          ;
+    reg [ 2 :0] VST_Ds       ;
     always @(posedge CK_i or negedge XARST_i)
         if( ~ XARST_i )
         begin
-            HDLY_CTR    <= ~ 0 ;
+            HDLY_CTRs   <= ~ 0 ;
             HST         <= 1'b0 ;
-            HST_D       <= 0 ;
-            VDLY_CTR    <= ~ 0 ;
+            HST_Ds      <= 0 ;
+            VDLY_CTRs   <= ~ 0 ;
             VST         <= 1'b0 ;
-            VST_D       <= 0 ;
+            VST_Ds      <= 0 ;
         end else 
         begin
             if( HP )
-                HDLY_CTR <= 0 ;
+                HDLY_CTRs <= 0 ;
             else
             begin
-                if(~(&HDLY_CTR))
-                    HDLY_CTR <= HDLY_CTR + 1 ;
+                if(~(&HDLY_CTRs))
+                    HDLY_CTRs <= HDLY_CTRs + 1 ;
             end 
-            HST <= (HDLY_CTR == BUS_H_DLY) ;
-            HST_D <= {HST_D[1 : 0] , HST} ;
+            HST <= (HDLY_CTRs == BUS_H_DLYs) ;
+            HST_Ds <= {HST_Ds[1 : 0] , HST} ;
             if( VP )
-                VDLY_CTR <= 0 ;
+                VDLY_CTRs <= 0 ;
             else if( HP )
             begin
-                if(~ (&VDLY_CTR))
-                    VDLY_CTR <= VDLY_CTR + 1 ;
+                if(~ (&VDLY_CTRs))
+                    VDLY_CTRs <= VDLY_CTRs + 1 ;
             end
             VST <=
-                (VDLY_CTR == BUS_V_DLY) 
+                (VDLY_CTRs == BUS_V_DLYs) 
                 & 
-                (HDLY_CTR == BUS_H_DLY)
+                (HDLY_CTRs == BUS_H_DLYs)
             ;
-            VST_D <= {VST_D[1 : 0] , VST} ;
+            VST_Ds <= {VST_Ds[1 : 0] , VST} ;
         end
 
-    reg [ 2 :0] PRESCALER_HCTR  ;
+    reg [ 2 :0] PRESCALER_HCTRs  ;
     reg         HCTR_EE         ;
-    reg [ 5 :0] HCTR_EE_D       ;
-    reg [ 2 :0] PRESCALER_VCTR  ;
+    reg [ 5 :0] HCTR_EE_Ds       ;
+    reg [ 2 :0] PRESCALER_VCTRs  ;
     reg         VCTR_EE         ;
     always @(posedge CK_i or negedge XARST_i)
         if( ~ XARST_i )
         begin
-            PRESCALER_HCTR  <=0   ;
+            PRESCALER_HCTRs  <=0   ;
             HCTR_EE         <= 1'b0 ;
-            HCTR_EE_D       <=0   ;
-            PRESCALER_VCTR  <=0   ;
+            HCTR_EE_Ds       <=0   ;
+            PRESCALER_VCTRs  <=0   ;
             VCTR_EE         <= 1'b0 ;
         end else
         begin
             if( HST )
-                PRESCALER_HCTR <= 0 ;
-            else if(PRESCALER_HCTR==BUS_H_MAG)
-                PRESCALER_HCTR <= 0 ;
+                PRESCALER_HCTRs <= 0 ;
+            else if(PRESCALER_HCTRs==BUS_H_MAGs)
+                PRESCALER_HCTRs <= 0 ;
             else
-                PRESCALER_HCTR <= PRESCALER_HCTR + 1 ;
-            HCTR_EE <= &(~PRESCALER_HCTR) ;
-            HCTR_EE_D <= {HCTR_EE_D[4 : 0] , HCTR_EE} ;
+                PRESCALER_HCTRs <= PRESCALER_HCTRs + 1 ;
+            HCTR_EE <= &(~PRESCALER_HCTRs) ;
+            HCTR_EE_Ds <= {HCTR_EE_Ds[4 : 0] , HCTR_EE} ;
             if( VST )
-                PRESCALER_VCTR <= 0 ;
+                PRESCALER_VCTRs <= 0 ;
             else if( HST )
             begin
-                if(PRESCALER_VCTR == BUS_V_MAG)
-                    PRESCALER_VCTR <= 0 ;
+                if(PRESCALER_VCTRs == BUS_V_MAGs)
+                    PRESCALER_VCTRs <= 0 ;
                 else
-                    PRESCALER_VCTR <= PRESCALER_VCTR + 1 ;
+                    PRESCALER_VCTRs <= PRESCALER_VCTRs + 1 ;
             end
-            VCTR_EE <= HST_D[ 0 ] & (&(~PRESCALER_VCTR)) ;
+            VCTR_EE <= HST_Ds[ 0 ] & (&(~PRESCALER_VCTRs)) ;
         end
-    reg [7:0]   HCTR    ;
-    reg [7:0]   H_ADR   ;
-    reg [7:0]   VCTR    ;
-    reg [7:0]   V_ADR   ;
+    reg [7:0]   HCTRs    ;
+    reg [7:0]   H_ADRs   ;
+    reg [7:0]   VCTRs    ;
+    reg [7:0]   V_ADRs   ;
     always @(posedge CK_i or negedge XARST_i)
         if( ~ XARST_i )
         begin
-            HCTR    <= 0 ;
-            H_ADR   <= 0 ;
-            VCTR    <= 0 ;
-            V_ADR   <= 0 ;
+            HCTRs    <= 0 ;
+            H_ADRs   <= 0 ;
+            VCTRs    <= 0 ;
+            V_ADRs   <= 0 ;
         end else
         begin
-            if( HST_D[1] )
-                HCTR    <= 0 ;
-            else if( HCTR_EE )
-                HCTR <= HCTR + 1 ;
-            H_ADR   <= HCTR + BUS_H_SCROLL ;
-            if( VST_D[1] )
-                VCTR    <= 0 ;
-            else if( VCTR_EE )
-                VCTR <= VCTR + 1 ;
-            V_ADR   <= VCTR + BUS_V_SCROLL ;
+            if( HST_Ds[1] )
+                HCTRs    <= 0 ;
+            else if( HCTRs_EE )
+                HCTRs <= HCTRs + 1 ;
+            H_ADRs   <= HCTRs + BUS_H_SCROLLs ;
+            if( VST_Ds[1] )
+                VCTRs    <= 0 ;
+            else if( VCTRs_EE )
+                VCTRs <= VCTRs + 1 ;
+            V_ADRs   <= VCTRs + BUS_V_SCROLLs ;
         end
-    wire[2 :0] CHAR_PIX_CTR  = H_ADR[ 2 :0] ;
-    wire[4 :0] CHAR_H_CTR    = H_ADR[ 7: 3] ;
-    wire[2 :0] CHAR_LINE_CTR = V_ADR[ 2 :0] ;
-    wire[4 :0] CHAR_V_CTR    = V_ADR[ 7: 3] ;
+    wire[2 :0] CHAR_PIX_CTRs  = H_ADRs[ 2 :0] ;
+    wire[4 :0] CHAR_H_CTRs    = H_ADRs[ 7: 3] ;
+    wire[2 :0] CHAR_LINE_CTRs = V_ADRs[ 2 :0] ;
+    wire[4 :0] CHAR_V_CTRs    = V_ADRs[ 7: 3] ;
 
     reg         HBLK    ;
     reg         VBLK    ;
-    reg [ 4:0]  BLK_AQ  ;
+    reg [ 4:0]  BLK_ADs  ;
     always @(posedge CK_i or negedge XARST_i)
         if( ~ XARST_i )
         begin
             HBLK <= 1'b1 ;
             VBLK <= 1'b1 ;
-            BLK_AQ <= ~ 0 ;
+            BLK_ADs <= ~ 0 ;
         end else
         begin
-            if( HST_D[2] )
+            if( HST_Ds[2] )
                 HBLK <= 1'b0 ;
-            else if( & HCTR )
+            else if( & HCTRs )
                 HBLK <= 1'b1 ;
 
-            if( VST_D[2] )
+            if( VST_Ds[2] )
                 VBLK <= 1'b0 ;
-            else if( &{VCTR,HCTR} )
+            else if( &{VCTRs,HCTRs} )
             begin
                 VBLK <= 1'b1 ;
             end
 
-            BLK_AQ <= {BLK_AQ[3 : 0] , (HBLK | VBLK)} ;
+            BLK_ADs <= {BLK_ADs[3 : 0] , (HBLK | VBLK)} ;
         end
-    wire BLK = BLK_AQ[ 3 ] ;
+    wire BLK = BLK_ADs[ 3 ] ;
 
     //
-    reg [7:0]   VRAM_WD ;
-    reg [9:0]   VRAM_WA ;
+    reg [7:0]   VRAM_WDs ;
+    reg [9:0]   VRAM_WAs ;
     reg         VRAM_WE ;
     always @(posedge CK_i or negedge XARST_i)
         if( ~ XARST_i )
         begin
-            VRAM_WD <= 0 ;
-            VRAM_WA <= 0 ;
+            VRAM_WDs <= 0 ;
+            VRAM_WAs <= 0 ;
             VRAM_WE <= 1'b0 ;
         end else
         begin
             if( BUS_OSD_CPU_USE )
             begin
-                VRAM_WD <= CPU_VRAM_WD_i ;
-                VRAM_WA <= CPU_VRAM_WA_i ;
-                VRAM_WE <= CPU_VRAM_WE_i ;
+                VRAM_WDs <= CPU_VRAM_WDs_i ;
+                VRAM_WAs <= CPU_VRAM_WAs_i ;
+                VRAM_WE  <= CPU_VRAM_WE_i ;
             end else
             begin
-                VRAM_WD <= VRAM_WD_i ;
-                VRAM_WA <= VRAM_WA_i ;
-                VRAM_WE <= VRAM_WE_i ;
+                VRAM_WDs <= VRAM_WDs_i ;
+                VRAM_WAs <= VRAM_WAs_i ;
+                VRAM_WE  <= VRAM_WE_i ;
             end
         end
-    wire [5+5-1:0]  VRAM_RA = {CHAR_V_CTR , CHAR_H_CTR} ;
-    wire [7:0]  VRAM_RD ;
+    wire [5+5-1:0]  VRAM_RAs = {CHAR_V_CTRs , CHAR_H_CTRs} ;
+    wire [7:0]  VRAM_RDs ;
     DP_RAM 
     #(
           .C_DAT_W  (  8        )
@@ -241,63 +243,63 @@ module CHR_GEN
         , .R_CK_i   ( CK_i      )
         , .XARST_i  ( XARST_i   )
         , .WE_i     ( VRAM_WE   )
-        , .WD_i     ( VRAM_WD   )
-        , .WA_i     ( VRAM_WA   )
-        , .RA_i     ( VRAM_RA   )
-        , .RD_o     ( VRAM_RD   )
+        , .WDs_i    ( VRAM_WDs  )
+        , .WAs_i    ( VRAM_WAs  )
+        , .RAs_i    ( VRAM_RAs   )
+        , .RDs_o    ( VRAM_RDs   )
     ) ; //DP_RAM ; 
 
-    reg [ 3 :0] SHIFT_REG_LD_AQ ;
-    reg [ 2 :0] CHAR_LINE_D     ;
-    reg [ 2 :0] CHAR_LINE_DD    ;
+    reg [ 3 :0] SHIFT_REG_LD_AQs ;
+    reg [ 2 :0] CHAR_LINEs_D     ;
+    reg [ 2 :0] CHAR_LINEs_DD    ;
     wire        SHIFT_LD_AQ_a   ;
-    assign SHIFT_LD_AQ_a = (CHAR_PIX_CTR==0) & HCTR_EE_D[1] ;
+    assign SHIFT_LD_AQ_a = (CHAR_PIX_CTRs==0) & HCTRs_EE_Ds[1] ;
     always @(posedge CK_i or negedge XARST_i)
         if( ~ XARST_i )
         begin
-            SHIFT_REG_LD_AQ <= 0 ;
-            CHAR_LINE_D     <= 0 ;
-            CHAR_LINE_DD    <= 0 ;
+            SHIFT_REG_LD_AQs <= 0 ;
+            CHAR_LINEs_D     <= 0 ;
+            CHAR_LINEs_DD    <= 0 ;
         end else
         begin
-            SHIFT_REG_LD_AQ <= 
+            SHIFT_REG_LD_AQs <= 
                 { 
-                    SHIFT_REG_LD_AQ[ 2 :0]
+                    SHIFT_REG_LD_AQs[ 2 :0]
                     ,
-                    SHIFT_REG_LD_AQ_a
+                    SHIFT_REG_LD_AQs_a
                 }
             ;
-            CHAR_LINE_D <= CHAR_LINE_CTR ;
-            CHAR_LINE_DD <= CHAR_LINE_D ;
+            CHAR_LINEs_D <= CHAR_LINE_CTRs ;
+            CHAR_LINEs_DD <= CHAR_LINEs_D ;
         end 
-    wire [10 :0] CHAR_ADR = {VRAM_RD , CHAR_LINE_DD} ;
-    wire [ 7 :0] FONT_DAT   ;
+    wire [10 :0] CHAR_ADRs = {VRAM_RDs , CHAR_LINEs_DD} ;
+    wire [ 7 :0] FONT_DATs   ;
     ichigojamfont_v12
     ichigojamfont_v12
     (
           .clock    ( CK_i      )
-        , .address  ( CHAR_ADR  )
-        , .q        ( FONT_DAT  )
+        , .address  ( CHAR_ADRs  )
+        , .q        ( FONT_DATs  )
     ) ;
 
-    wire SHIFT_REG_LD = SHIFT_REG_LD_AQ[ 3 ] ;
-    wire SHIFT_REG_SFL = HCTR_EE_D[ 5 ] ;
+    wire SHIFT_REG_LD = SHIFT_REG_LD_AQs[ 3 ] ;
+    wire SHIFT_REG_SFL = HCTRs_EE_Ds[ 5 ] ;
     wire char_blanked   ;
     wire fuchi_blanked  ;
-    reg [ 1 :0] CHAR_AQ     ;
-    reg [ 1 :0] BLK_D       ;
-    reg [ 7 :0] SHIFT_REG   ;
-    assign char_blanked = (~ BLK_D[0]) & SHIFT_REG[ 7 ] ;
+    reg [ 1 :0] CHAR_ADs     ;
+    reg [ 1 :0] BLK_Ds       ;
+    reg [ 7 :0] SHIFT_REGs   ;
+    assign char_blanked = (~ BLK_Ds[0]) & SHIFT_REGs[ 7 ] ;
     assign fuchi_blanked = 
         (~
             (
-                BUS_FUCHI_MASK & BLK_D[1]
+                BUS_FUCHI_MASK & BLK_Ds[1]
             )
         ) & 
         (
             char_blanked 
             |
-            ( | CHAR_AQ)
+            ( | CHAR_ADs)
         ) 
     ;
 
@@ -306,29 +308,29 @@ module CHR_GEN
     always @(posedge CK_i or negedge XARST_i)
         if( ~ XARST_i )
         begin
-            SHIFT_REG   <= 0 ;
-            BLK_D       <= ~ 0 ;
-            CHAR_AQ     <= 0 ;
+            SHIFT_REGs  <= 0 ;
+            BLK_Ds      <= ~ 0 ;
+            CHAR_ADs    <= 0 ;
             CHAR        <= 1'b0 ;
             FUCHI       <= 1'b0 ;
         end else
         begin
             if( BUS_OSD_OFF )
             begin
-                SHIFT_REG <= 0 ;
-                BLK_D   <= ~ 0 ;
-                CHAR_AQ <='d0 ;
-                CHAR    <= 1'b0 ;
-                FUCHI   <= 1'b0 ;
-            end else if( SHIFT_REG_SFL )
+                SHIFT_REGs  <= 0 ;
+                BLK_Ds      <= ~ 0 ;
+                CHAR_ADs    <='d0 ;
+                CHAR        <= 1'b0 ;
+                FUCHI       <= 1'b0 ;
+            end else if( SHIFT_REGs_SFL )
             begin
-                if( SHIFT_REG_LD )
-                    SHIFT_REG <= FONT_DAT ;
+                if( SHIFT_REGs_LD )
+                    SHIFT_REGs <= FONT_DATs ;
                 else
-                    SHIFT_REG <= {SHIFT_REG[ 6 :0] , 1'b0} ;
-                BLK_D <= {BLK_D[0] , BLK} ;
-                CHAR_AQ <= {CHAR_AQ[0] , char_blanked} ;
-                CHAR <= CHAR_AQ[0] ; //~ [1]
+                    SHIFT_REGs <= {SHIFT_REGs[ 6 :0] , 1'b0} ;
+                BLK_Ds <= {BLK_Ds[0] , BLK} ;
+                CHAR_ADs <= {CHAR_ADs[0] , char_blanked} ;
+                CHAR <= CHAR_ADs[0] ; //~ [1]
                 FUCHI <= fuchi_blanked ;
             end
         end

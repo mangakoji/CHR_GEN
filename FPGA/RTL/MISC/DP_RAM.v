@@ -1,6 +1,7 @@
 // DP_RAM.vhd
 // DP_RAM()
 //
+//180426r       :mod new coding rule
 //2018-03-09f   :mod new coding rule like BSD style
 //2012-01-01??  :1st
 module DP_RAM
@@ -12,42 +13,42 @@ module DP_RAM
     , input                     R_CK_i
     , input tri1                XARST_i
     , input tri0                WE_i
-    , input tri0 [C_DAT_W-1:0]  WD_i
-    , input tri0 [C_ADR_W-1:0]  WA_i
-    , input tri0 [C_ADR_W-1:0]  RA_i
-    , output[C_DAT_W-1:0]       RD_o 
+    , input tri0 [C_DAT_W-1:0]  WDs_i
+    , input tri0 [C_ADR_W-1:0]  WAs_i
+    , input tri0 [C_ADR_W-1:0]  RAs_i
+    , output[C_DAT_W-1:0]       RDs_o 
 ) ;
-    reg [C_DAT_W-1:0]   BIT_CELL    [0 : 2**C_ADR_W-1] ;
-    reg [C_ADR_W-1:0]   WA_D ;
-    reg [C_DAT_W-1:0]   WD_D ;
+    reg [C_DAT_W-1:0]   BIT_CELLs    [0 : 2**C_ADR_W-1] ;
+    reg [C_ADR_W-1:0]   WAs_D ;
+    reg [C_DAT_W-1:0]   WDs_D ;
     reg                 WE_D ;
     always @(posedge W_CK_i or negedge XARST_i ) 
         if( ~ XARST_i )
         begin
-            WA_D <= 'd0 ;
-            WD_D <= 'd0 ;
+            WAs_D <= 'd0 ;
+            WDs_D <= 'd0 ;
             WE_D <= 1'd0 ;
         end else
         begin 
-            WA_D <= WA_i ;
-            WD_D <= WD_i ;
+            WAs_D <= WAs_i ;
+            WDs_D <= WDs_i ;
             WE_D <= WE_i ;
             if( WE_D )
-                BIT_CELL[ WA_D  ] <= WD_D ;
+                BIT_CELLs[ WAs_D  ] <= WDs_D ;
         end
 
-    reg [C_ADR_W-1:0]   RA_D ;
-    reg [C_DAT_W-1:0]   RD   ;
+    reg [C_ADR_W-1:0]   RAs_D ;
+    reg [C_DAT_W-1:0]   RDs   ;
     always @(posedge R_CK_i or negedge XARST_i ) 
         if( ~ XARST_i  )
         begin
-            RA_D <= 'd0 ;
-            RD <= 'd0 ;
+            RAs_D <= 'd0 ;
+            RDs <= 'd0 ;
         end else
         begin
-            RA_D <= RA_i ;
-            RD  <= BIT_CELL[ RA_D ] ;
+            RAs_D <= RA_i ;
+            RDs  <= BIT_CELLs[ RAs_D ] ;
         end
-    assign RD_o = RD ;
+    assign RDs_o = RDs ;
 endmodule
 // DP_RAM()
