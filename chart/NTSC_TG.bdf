@@ -1,0 +1,153 @@
+/*
+WARNING: Do NOT edit the input and output ports in this file in a text
+editor if you plan to continue editing the block that represents it in
+the Block Editor! File corruption is VERY likely to occur.
+*/
+/*
+Copyright (C) 1991-2008 Altera Corporation
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, Altera MegaCore Function License 
+Agreement, or other applicable license agreement, including, 
+without limitation, that your use is for the sole purpose of 
+programming logic devices manufactured by Altera and sold by 
+Altera or its authorized distributors.  Please refer to the 
+applicable agreement for further details.
+*/
+//#pragma file_not_in_maxplusii_format
+(header "graphic" (version "1.3"))
+(connector
+	(pt 768 384)
+	(pt 792 384)
+)
+(connector
+	(pt 600 384)
+	(pt 624 384)
+)
+(connector
+	(pt 488 392)
+	(pt 600 392)
+)
+(connector
+	(pt 648 384)
+	(pt 672 384)
+)
+(connector
+	(pt 624 392)
+	(pt 648 392)
+)
+(connector
+	(pt 808 384)
+	(pt 832 384)
+)
+(connector
+	(pt 672 392)
+	(pt 768 392)
+)
+(connector
+	(pt 792 392)
+	(pt 808 392)
+)
+(connector
+	(pt 832 392)
+	(pt 1024 392)
+)
+(connector
+	(pt 1024 392)
+	(pt 1024 408)
+)
+(connector
+	(pt 648 384)
+	(pt 648 392)
+)
+(connector
+	(pt 648 392)
+	(pt 648 408)
+)
+(connector
+	(pt 672 384)
+	(pt 672 392)
+)
+(connector
+	(pt 672 392)
+	(pt 672 408)
+)
+(connector
+	(pt 768 384)
+	(pt 768 392)
+)
+(connector
+	(pt 768 392)
+	(pt 768 408)
+)
+(connector
+	(pt 792 384)
+	(pt 792 392)
+)
+(connector
+	(pt 792 392)
+	(pt 792 408)
+)
+(connector
+	(pt 808 384)
+	(pt 808 392)
+)
+(connector
+	(pt 808 392)
+	(pt 808 408)
+)
+(connector
+	(pt 832 384)
+	(pt 832 392)
+)
+(connector
+	(pt 832 392)
+	(pt 832 408)
+)
+(connector
+	(pt 624 416)
+	(pt 600 416)
+)
+(connector
+	(pt 600 384)
+	(pt 600 392)
+)
+(connector
+	(pt 600 392)
+	(pt 600 416)
+)
+(connector
+	(pt 624 384)
+	(pt 624 392)
+)
+(connector
+	(pt 624 392)
+	(pt 624 416)
+)
+(junction (pt 600 392))
+(junction (pt 624 392))
+(junction (pt 648 392))
+(junction (pt 672 392))
+(junction (pt 768 392))
+(junction (pt 792 392))
+(junction (pt 808 392))
+(junction (pt 832 392))
+(text "2. At Request from uCom , in {Addr/10,DAT/8}was change -> write" (rect 504 2064 1024 2079)(font "Consolas" (font_size 10)))
+(text "D" (rect 776 392 786 411)(font "Consolas" (font_size 12)))
+(text "D" (rect 656 392 666 411)(font "Consolas" (font_size 12)))
+(text "D" (rect 608 392 618 411)(font "Consolas" (font_size 12)))
+(text "SHIFT_REG_LD_AQ" (rect 624 344 783 363)(font "Consolas" (font_size 12)))
+(text "[0]" (rect 608 360 639 379)(font "Consolas" (font_size 12)))
+(text "[1]" (rect 648 360 679 379)(font "Consolas" (font_size 12)))
+(text "[2]" (rect 768 360 799 379)(font "Consolas" (font_size 12)))
+(text "D" (rect 816 392 826 411)(font "Consolas" (font_size 12)))
+(text "[3]" (rect 808 360 839 379)(font "Consolas" (font_size 12)))
+(text "SHIFT_REG_LD" (rect 856 368 983 387)(font "Consolas" (font_size 12)))
+(text "SHIFT_REG/8" (rect 1000 360 1116 379)(font "Consolas" (font_size 12)))
+(text "SHIFT_REG_LD_AQ_a" (rect 440 368 620 387)(font "Consolas" (font_size 12)))
+(text "NTSC_TG" (rect 72 360 228 401)(font "Consolas" (font_size 26)))
+(text "2018-04-26r" (rect 216 368 306 383)(font "Consolas" (font_size 10)))
