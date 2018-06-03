@@ -69,18 +69,18 @@ module  NTSC_TG
     assign div_XVD = ~XVD_i & XVD_D ;
 
 
-    wire    HCY             ;
+    wire    Hcy             ;
     reg     [ 9:0]  HCTRs      ;
-    assign  HCY = & ( ((P_H_SIZE - 1) & HCTRs[9 :0]) | ~(P_H_SIZE -1)) ;
-    wire            HHCY            ;
-    assign  HHCY = (P_HH_SIZE - 1) ==  HCTRs[9 :0] ;
+    assign  Hcy = & ( ((P_H_SIZE - 1) & HCTRs[9 :0]) | ~(P_H_SIZE -1)) ;
+    wire            HHcy            ;
+    assign  HHcy = (P_HH_SIZE - 1) ==  HCTRs[9 :0] ;
     wire            HSYNC_a ;
     reg             HSYNC   ;
 
     // h_count 0--P_H_SIZE-1
     wire    [10:0]  HCTRs_inc   ;
     assign  HSYNC_a = 
-        ( HCY ) 
+        ( Hcy ) 
         ?
             1'b0
         : ((P_HSYNC_PORCH-1) == HCTRs[9:0]) 
@@ -97,7 +97,7 @@ module  NTSC_TG
             HSYNC   <= 1'b1 ;
         end else if( CK_EE_i ) 
         begin
-            HCTRs <= ( ~ XR || HCY) ? 9'h000 : HCTRs_inc[9 :0] ;
+            HCTRs <= ( ~ XR || Hcy) ? 9'h000 : HCTRs_inc[9 :0] ;
             HSYNC <=  HSYNC_a ;
         end
 
@@ -108,13 +108,13 @@ module  NTSC_TG
     reg             EQU_SYNC_CENTER         ;
     // 等価パルス＠VSYNC side 3+3H
     assign  EQU_SYNC_SIDE_a = 
-        ( HCY ) 
+        ( Hcy ) 
         ?
             1'b0
         :((C_EQU_SIDE_1-1) == HCTRs) 
         ?
             1'b1
-        : ( HHCY ) 
+        : ( HHcy ) 
         ?
             1'b0
         :((C_EQU_SIDE_2 - 1) == HCTRs) 
@@ -125,13 +125,13 @@ module  NTSC_TG
     ;
     //      等価パルス＠VSYNC center 3 H
     assign  EQU_SYNC_CENTER_a = 
-        ( HCY ) 
+        ( Hcy ) 
         ?
             1'b0
         :((C_EQU_CENTER_1-1) == HCTRs) 
         ? 
             1'b1
-        : ( HHCY )
+        : ( HHcy )
         ?
             1'b0
         :((C_EQU_CENTER_2-1) == HCTRs) 
@@ -193,10 +193,10 @@ module  NTSC_TG
                 ( ~XR ) 
                 ?
                     10'h000
-                : (VCY & HCY) 
+                : (VCY & Hcy) 
                 ? 
                     10'h000
-                : ( HCY ) 
+                : ( Hcy ) 
                 ?
                     inc_v[9 :0]
                 :
@@ -206,10 +206,10 @@ module  NTSC_TG
                 ( ~ XR) 
                 ?
                     1'b0
-                : (v0cy & HCY ) 
+                : (v0cy & Hcy ) 
                 ?       
                     1'b1
-                : (v1cy & HCY) 
+                : (v1cy & Hcy) 
                 ?
                     1'b0
                 :
@@ -221,16 +221,16 @@ module  NTSC_TG
     wire            VSYNC_a ;
     reg             VSYNC   ;
     assign  VSYNC_a = 
-        (VCY &  HCY  &   FI) 
+        (VCY &  Hcy  &   FI) 
         ?
             1'b0 
-        : ((9-1 == VCTRs) & HCY  & ~ FI) 
+        : ((9-1 == VCTRs) & Hcy  & ~ FI) 
         ?   
             1'b1 
-        : (VCY & HHCY & ~ FI) 
+        : (VCY & HHcy & ~ FI) 
         ?
             1'b0 
-        : ((9-1 == VCTRs) & HHCY &   FI) 
+        : ((9-1 == VCTRs) & HHcy &   FI) 
         ?
             1'b1
         :
@@ -244,16 +244,16 @@ module  NTSC_TG
 
     reg     EQU_SYNC_CENTER_now ;
     assign  EQU_SYNC_CENTER_now_a = 
-        ((  2 == VCTRs) & HCY  & ~ FI) 
+        ((  2 == VCTRs) & Hcy  & ~ FI) 
         ?
             1'b1 
-        :((  5 == VCTRs) & HCY  & ~ FI) 
+        :((  5 == VCTRs) & Hcy  & ~ FI) 
         ?
             1'b0 
-        :((  2 == VCTRs) & HHCY &   FI) 
+        :((  2 == VCTRs) & HHcy &   FI) 
         ?
             1'b1 
-        :((  5 == VCTRs) & HHCY &   FI) 
+        :((  5 == VCTRs) & HHcy &   FI) 
         ?
             1'b0
         :
@@ -287,16 +287,16 @@ module  NTSC_TG
             H_BLANK  
     ;
     assign V_BLANK_a =
-        (FI & VCY & HCY) 
+        (FI & VCY & Hcy) 
         ?
             1'b1 
-        :(~FI & (19 == VCTRs) & HCY) 
+        :(~FI & (19 == VCTRs) & Hcy) 
         ?
             1'b0 
-        :(~FI & VCY & HHCY) 
+        :(~FI & VCY & HHcy) 
         ?
             1'b1 
-        :(FI & (19 == VCTRs) & HHCY) 
+        :(FI & (19 == VCTRs) & HHcy) 
         ?
             1'b0
         :
