@@ -15,6 +15,7 @@ module CHR_GEN
 (
       input             CK_i
     , input tri1        XAR_i
+    , input tri1        CK_EE_i
     , input tri1        XHD_i
     , input tri1        XVD_i
     , input tri0 [7:0]  VRAM_WDs_i
@@ -45,7 +46,7 @@ module CHR_GEN
         begin
             XHD_D   <= 1'b1 ;
             XVD_D   <= 1'b1 ;
-        end else
+        end else if( CK_EE_i )
         begin
             XHD_D <= XHD_i ;
             XVD_D <= XVD_i ;
@@ -65,7 +66,7 @@ module CHR_GEN
                 HP      <= 1'b0 ;
                 VD_D    <= 1'b0 ;
                 VP      <= 1'b0 ;
-        end else
+        end else if( CK_EE_i )
         begin
                 HD_Ds   <= {HD_Ds[0] , div_xhd} ;
                 HP      <= HD_Ds[1]  ;
@@ -91,7 +92,7 @@ module CHR_GEN
             VDLY_CTRs   <= ~ 0 ;
             VST         <= 1'b0 ;
             VST_Ds      <= 0 ;
-        end else 
+        end else if( CK_EE_i )
         begin
             if( HP )
                 HDLY_CTRs <= 0 ;
@@ -130,7 +131,7 @@ module CHR_GEN
             HCTRs_EE_Ds       <=0   ;
             PRESCALER_VCTRs  <=0   ;
             VCTRs_EE         <= 1'b0 ;
-        end else
+        end else if( CK_EE_i )
         begin
             if( HST )
                 PRESCALER_HCTRs <= 0 ;
@@ -163,7 +164,7 @@ module CHR_GEN
             H_ADRs   <= 0 ;
             VCTRs    <= 0 ;
             V_ADRs   <= 0 ;
-        end else
+        end else if( CK_EE_i )
         begin
             if( HST_Ds[1] )
                 HCTRs    <= 0 ;
@@ -190,7 +191,7 @@ module CHR_GEN
             HBLK <= 1'b1 ;
             VBLK <= 1'b1 ;
             BLK_ADs <= ~ 0 ;
-        end else
+        end else if( CK_EE_i )
         begin
             if( HST_Ds[2] )
                 HBLK <= 1'b0 ;
@@ -218,7 +219,7 @@ module CHR_GEN
             VRAM_WDs <= 0 ;
             VRAM_WAs <= 0 ;
             VRAM_WE <= 1'b0 ;
-        end else
+        end else if( CK_EE_i )
         begin
             if( BUS_OSD_CPU_USE )
             begin
@@ -244,8 +245,10 @@ module CHR_GEN
           .W_CK_i   ( CK_i      )
         , .R_CK_i   ( CK_i      )
 //        , .XAR_i    ( XAR_i   )
+        , .WCK_EE_i ( CK_EE_i   )
         , .WE_i     ( VRAM_WE   )
         , .WDs_i    ( VRAM_WDs  )
+        , .RCK_EE_i ( CK_EE_i   )
         , .WAs_i    ( VRAM_WAs  )
         , .RAs_i    ( VRAM_RAs   )
         , .RDs_o    ( VRAM_RDs   )
@@ -262,7 +265,7 @@ module CHR_GEN
             SHIFT_REG_LD_AQs <= 0 ;
             CHAR_LINEs_D     <= 0 ;
             CHAR_LINEs_DD    <= 0 ;
-        end else
+        end else if( CK_EE_i )
         begin
             SHIFT_REG_LD_AQs <= 
                 { 
@@ -280,6 +283,7 @@ module CHR_GEN
     ichigojamfont_v12
     (
           .clock    ( CK_i      )
+        , .CK_EE_i  ( CK_EE_i   )
         , .address  ( CHAR_ADRs  )
         , .q        ( FONT_DATs  )
     ) ;
@@ -314,7 +318,7 @@ module CHR_GEN
             CHAR_ADs    <= 0 ;
             CHAR        <= 1'b0 ;
             FUCHI       <= 1'b0 ;
-        end else
+        end else if( CK_EE_i )
         begin
             if( BUS_OSD_OFF )
             begin

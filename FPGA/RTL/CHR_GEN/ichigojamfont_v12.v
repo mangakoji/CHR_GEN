@@ -7,13 +7,15 @@
 // 2017-12-26 10:12:49.385000  : make up
 module ichigojamfont_v12
 (
-      input         clock  
-    , input [10:0]  address
-    , output[7:0]   q     
+      input             clock  
+    , input       tri1  CK_EE_i
+    , input [10:0]      address
+    , output[7:0]       q 
 ) ;
     reg [10:0]  ADR_D ;
     reg [ 7:0]  QQ ;
     always @(posedge clock )
+    if( CK_EE_i )
     begin
             ADR_D <= address ;
             case( ADR_D )

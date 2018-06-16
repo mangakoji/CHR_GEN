@@ -13,9 +13,11 @@ module DP_RAM
       input                     W_CK_i
     , input                     R_CK_i
     , input tri1                XAR_i
+    , input tri1                WCK_EE_i
     , input tri0                WE_i
     , input tri0 [C_DAT_W-1:0]  WDs_i
     , input tri0 [C_ADR_W-1:0]  WAs_i
+    , input tri1                RCK_EE_i
     , input tri0 [C_ADR_W-1:0]  RAs_i
     , output[C_DAT_W-1:0]       RDs_o 
 ) ;
@@ -30,15 +32,16 @@ module DP_RAM
             WAs_D <= 'd0 ;
             WDs_D <= 'd0 ;
             WE_D <= 1'd0 ;
-        end else
+        end else if( WCK_EE_i )
         begin 
             WAs_D <= WAs_i ;
             WDs_D <= WDs_i ;
             WE_D <= WE_i ;
         end
     always @(posedge W_CK_i ) 
-        if( WE_D )
-            BIT_CELLs[ WAs_D  ] <= WDs_D ;
+        if(WCK_EE_i)
+            if( WE_D )
+                BIT_CELLs[ WAs_D  ] <= WDs_D ;
 
     reg [C_ADR_W-1:0]   RAs_AD ;
     reg [C_ADR_W-1:0]   RAs ;
@@ -49,7 +52,7 @@ module DP_RAM
         begin
             RAs_AD <= 'd0 ;
             RAs <= 'd0 ;
-        end else
+        end else if( RCK_EE_i )
         begin
             RAs_AD  <= RAs_i ;
             RAs <= RAs_AD  ;
