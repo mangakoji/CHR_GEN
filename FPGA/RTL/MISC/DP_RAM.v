@@ -96,7 +96,8 @@ module DP_RAM_BRG
     #( 
           .C_DAT_W  (  8    )
         , .C_ADR_W  ( 10    )
-    )(
+    )DP_RAM
+    (
           .W_CK_i   ( W_CK_i)
         , .R_CK_i   ( R_CK_i)
         , .XAR_i    ( XAR_i )

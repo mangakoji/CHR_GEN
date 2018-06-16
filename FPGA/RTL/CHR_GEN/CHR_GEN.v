@@ -4,6 +4,7 @@
 // license by BSD
 //      without font ROM data
 //
+//180617s       :syntax check passed 
 //180426f       :mod for new coding rule
 //2018-03-12m   :mod net naming rule xxxs
 //2018-03-11u   :mod new coding rule like BSD style
@@ -13,7 +14,7 @@
 module CHR_GEN
 (
       input             CK_i
-    , input tri1        XARST_i
+    , input tri1        XAR_i
     , input tri1        XHD_i
     , input tri1        XVD_i
     , input tri0 [7:0]  VRAM_WDs_i
@@ -39,15 +40,15 @@ module CHR_GEN
     reg     XVD_D ;
     wire    div_xhd ;
     wire    div_xvd ;
-    always @(posedge CK_i or negedge XARST_i)
-        if( ~ XARST_i )
+    always @(posedge CK_i or negedge XAR_i)
+        if( ~ XAR_i )
         begin
-                XHD_D   <= 1'b1 ;
-                XVD_D   <= 1'b1 ;
+            XHD_D   <= 1'b1 ;
+            XVD_D   <= 1'b1 ;
         end else
         begin
-                XHD_D <= XHD_i ;
-                XVD_D <= XVD_i ;
+            XHD_D <= XHD_i ;
+            XVD_D <= XVD_i ;
         end
     assign div_xhd = (~ XHD_i) & XHD_D ;
     assign div_xvd = (~ XVD_i) & XVD_D ;
@@ -57,8 +58,8 @@ module CHR_GEN
     reg         HP      ;
     reg         VD_D    ;
     reg         VP      ;
-    always @(posedge CK_i or negedge XARST_i)
-        if( ~ XARST_i )
+    always @(posedge CK_i or negedge XAR_i)
+        if( ~ XAR_i )
         begin
                 HD_Ds   <= 'd0 ;
                 HP      <= 1'b0 ;
@@ -81,8 +82,8 @@ module CHR_GEN
     reg [11:0]  VDLY_CTRs    ;
     reg         VST          ;
     reg [ 2 :0] VST_Ds       ;
-    always @(posedge CK_i or negedge XARST_i)
-        if( ~ XARST_i )
+    always @(posedge CK_i or negedge XAR_i)
+        if( ~ XAR_i )
         begin
             HDLY_CTRs   <= ~ 0 ;
             HST         <= 1'b0 ;
@@ -117,18 +118,18 @@ module CHR_GEN
         end
 
     reg [ 2 :0] PRESCALER_HCTRs  ;
-    reg         HCTR_EE         ;
-    reg [ 5 :0] HCTR_EE_Ds       ;
+    reg         HCTRs_EE         ;
+    reg [ 5 :0] HCTRs_EE_Ds       ;
     reg [ 2 :0] PRESCALER_VCTRs  ;
-    reg         VCTR_EE         ;
-    always @(posedge CK_i or negedge XARST_i)
-        if( ~ XARST_i )
+    reg         VCTRs_EE         ;
+    always @(posedge CK_i or negedge XAR_i)
+        if( ~ XAR_i )
         begin
             PRESCALER_HCTRs  <=0   ;
-            HCTR_EE         <= 1'b0 ;
-            HCTR_EE_Ds       <=0   ;
+            HCTRs_EE         <= 1'b0 ;
+            HCTRs_EE_Ds       <=0   ;
             PRESCALER_VCTRs  <=0   ;
-            VCTR_EE         <= 1'b0 ;
+            VCTRs_EE         <= 1'b0 ;
         end else
         begin
             if( HST )
@@ -137,8 +138,8 @@ module CHR_GEN
                 PRESCALER_HCTRs <= 0 ;
             else
                 PRESCALER_HCTRs <= PRESCALER_HCTRs + 1 ;
-            HCTR_EE <= &(~PRESCALER_HCTRs) ;
-            HCTR_EE_Ds <= {HCTR_EE_Ds[4 : 0] , HCTR_EE} ;
+            HCTRs_EE <= &(~PRESCALER_HCTRs) ;
+            HCTRs_EE_Ds <= {HCTRs_EE_Ds[4 : 0] , HCTRs_EE} ;
             if( VST )
                 PRESCALER_VCTRs <= 0 ;
             else if( HST )
@@ -148,16 +149,15 @@ module CHR_GEN
                 else
                     PRESCALER_VCTRs <= PRESCALER_VCTRs + 1 ;
             end
-            VCTR_EE <= HST_Ds[ 0 ] & (&(~PRESCALER_VCTRs)) ;
+            VCTRs_EE <= HST_Ds[ 0 ] & (&(~PRESCALER_VCTRs)) ;
         end
+
     reg [7:0]   HCTRs    ;
     reg [7:0]   H_ADRs   ;
     reg [7:0]   VCTRs    ;
     reg [7:0]   V_ADRs   ;
-    reg         HCTRs_EE ;
-    reg         VCTRs_EE ;
-    always @(posedge CK_i or negedge XARST_i)
-        if( ~ XARST_i )
+    always @(posedge CK_i or negedge XAR_i)
+        if( ~ XAR_i )
         begin
             HCTRs    <= 0 ;
             H_ADRs   <= 0 ;
@@ -184,8 +184,8 @@ module CHR_GEN
     reg         HBLK    ;
     reg         VBLK    ;
     reg [ 4:0]  BLK_ADs  ;
-    always @(posedge CK_i or negedge XARST_i)
-        if( ~ XARST_i )
+    always @(posedge CK_i or negedge XAR_i)
+        if( ~ XAR_i )
         begin
             HBLK <= 1'b1 ;
             VBLK <= 1'b1 ;
@@ -212,8 +212,8 @@ module CHR_GEN
     reg [7:0]   VRAM_WDs ;
     reg [9:0]   VRAM_WAs ;
     reg         VRAM_WE ;
-    always @(posedge CK_i or negedge XARST_i)
-        if( ~ XARST_i )
+    always @(posedge CK_i or negedge XAR_i)
+        if( ~ XAR_i )
         begin
             VRAM_WDs <= 0 ;
             VRAM_WAs <= 0 ;
@@ -243,7 +243,7 @@ module CHR_GEN
     (
           .W_CK_i   ( CK_i      )
         , .R_CK_i   ( CK_i      )
-        , .XARST_i  ( XARST_i   )
+//        , .XAR_i    ( XAR_i   )
         , .WE_i     ( VRAM_WE   )
         , .WDs_i    ( VRAM_WDs  )
         , .WAs_i    ( VRAM_WAs  )
@@ -254,11 +254,10 @@ module CHR_GEN
     reg [ 3 :0] SHIFT_REG_LD_AQs ;
     reg [ 2 :0] CHAR_LINEs_D     ;
     reg [ 2 :0] CHAR_LINEs_DD    ;
-    wire[ 3 :0] SHIFT_REG_LD_AQs_a   ;
-    reg [ 5 :0] HCTRs_EE_Ds ;
-    assign SHIFT_LD_AQ_a = (CHAR_PIX_CTRs==0) & HCTRs_EE_Ds[1] ;
-    always @(posedge CK_i or negedge XARST_i)
-        if( ~ XARST_i )
+    wire        SHIFT_REG_LD_AQ_a   ;
+    assign SHIFT_REG_LD_AQ_a = (CHAR_PIX_CTRs==0) & HCTRs_EE_Ds[1] ;
+    always @(posedge CK_i or negedge XAR_i)
+        if( ~ XAR_i )
         begin
             SHIFT_REG_LD_AQs <= 0 ;
             CHAR_LINEs_D     <= 0 ;
@@ -269,7 +268,7 @@ module CHR_GEN
                 { 
                     SHIFT_REG_LD_AQs[ 2 :0]
                     ,
-                    SHIFT_REG_LD_AQs_a
+                    SHIFT_REG_LD_AQ_a
                 }
             ;
             CHAR_LINEs_D <= CHAR_LINE_CTRs ;
@@ -284,9 +283,8 @@ module CHR_GEN
         , .address  ( CHAR_ADRs  )
         , .q        ( FONT_DATs  )
     ) ;
-
-    wire SHIFT_REG_LD = SHIFT_REG_LD_AQs[ 3 ] ;
-    wire SHIFT_REG_SFL = HCTRs_EE_Ds[ 5 ] ;
+    wire SHIFT_REGs_LD = SHIFT_REG_LD_AQs[ 3 ] ;
+    wire SHIFT_REGs_SFL = HCTRs_EE_Ds[ 5 ] ;
     wire char_blanked   ;
     wire fuchi_blanked  ;
     reg [ 1 :0] CHAR_ADs     ;
@@ -308,8 +306,8 @@ module CHR_GEN
 
     reg         CHAR    ;
     reg         FUCHI   ;
-    always @(posedge CK_i or negedge XARST_i)
-        if( ~ XARST_i )
+    always @(posedge CK_i or negedge XAR_i)
+        if( ~ XAR_i )
         begin
             SHIFT_REGs  <= 0 ;
             BLK_Ds      <= ~ 0 ;
