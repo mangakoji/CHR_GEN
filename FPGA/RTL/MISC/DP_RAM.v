@@ -23,6 +23,7 @@ module DP_RAM
     reg [C_ADR_W-1:0]   WAs_D ;
     reg [C_DAT_W-1:0]   WDs_D ;
     reg                 WE_D ;
+
     always @(posedge W_CK_i or negedge XAR_i ) 
         if( ~ XAR_i )
         begin
@@ -34,23 +35,26 @@ module DP_RAM
             WAs_D <= WAs_i ;
             WDs_D <= WDs_i ;
             WE_D <= WE_i ;
-            if( WE_D )
-                BIT_CELLs[ WAs_D  ] <= WDs_D ;
         end
+    always @(posedge W_CK_i ) 
+        if( WE_D )
+            BIT_CELLs[ WAs_D  ] <= WDs_D ;
 
-    reg [C_ADR_W-1:0]   RAs_D ;
-    reg [C_DAT_W-1:0]   RDs   ;
+    reg [C_ADR_W-1:0]   RAs_AD ;
+    reg [C_ADR_W-1:0]   RAs ;
+//    reg [C_DAT_W-1:0]   RDs_AD ;
+//    reg [C_DAT_W-1:0]   RDs   ;
     always @(posedge R_CK_i or negedge XAR_i ) 
         if( ~ XAR_i  )
         begin
-            RAs_D <= 'd0 ;
-            RDs <= 'd0 ;
+            RAs_AD <= 'd0 ;
+            RAs <= 'd0 ;
         end else
         begin
-            RAs_D <= RAs_i ;
-            RDs  <= BIT_CELLs[ RAs_D ] ;
+            RAs_AD  <= RAs_i ;
+            RAs <= RAs_AD  ;
         end
-    assign RDs_o = RDs ;
+    assign RDs_o = BIT_CELLs[ RAs ]  ;
 endmodule
 // DP_RAM()
 
@@ -95,6 +99,7 @@ module DP_RAM_BRG
     )(
           .W_CK_i   ( W_CK_i)
         , .R_CK_i   ( R_CK_i)
+        , .XAR_i    ( XAR_i )
         , .WE_i     ( WE  )
         , .WDs_i    ( WDs )
         , .WAs_i    ( WAs )

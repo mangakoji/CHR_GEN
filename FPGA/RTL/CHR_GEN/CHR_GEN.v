@@ -154,6 +154,8 @@ module CHR_GEN
     reg [7:0]   H_ADRs   ;
     reg [7:0]   VCTRs    ;
     reg [7:0]   V_ADRs   ;
+    reg         HCTRs_EE ;
+    reg         VCTRs_EE ;
     always @(posedge CK_i or negedge XARST_i)
         if( ~ XARST_i )
         begin
@@ -252,7 +254,8 @@ module CHR_GEN
     reg [ 3 :0] SHIFT_REG_LD_AQs ;
     reg [ 2 :0] CHAR_LINEs_D     ;
     reg [ 2 :0] CHAR_LINEs_DD    ;
-    wire        SHIFT_LD_AQ_a   ;
+    wire[ 3 :0] SHIFT_REG_LD_AQs_a   ;
+    reg [ 5 :0] HCTRs_EE_Ds ;
     assign SHIFT_LD_AQ_a = (CHAR_PIX_CTRs==0) & HCTRs_EE_Ds[1] ;
     always @(posedge CK_i or negedge XARST_i)
         if( ~ XARST_i )

@@ -31,11 +31,12 @@
 module  NTSC_TG 
 #(
       parameter C_H_START = 10'd126
-    , parameter C_V_START = 10'd31 ;
+    , parameter C_V_START = 10'd31 
 
 )(     
       input         CK_i 
     , input tri1    XAR_i 
+    , input tri1    XR_i
     , input tri1    CK_EE_i //when use 4fsc clock , make fix 1
     , input tri1    XHD_i
     , input tri1    XVD_i
@@ -43,8 +44,8 @@ module  NTSC_TG
     , output        BLANK_o //1:blank
     , output        BURST_o //1:burst
     , output        FI_o
-    , output        XHD_Q_o
-    , output        XVD_Q_o
+    , output        Q_HSYNC_o
+    , output        Q_VSYNC_o
 ) ;
     localparam 
           C_HH_SIZE             = 455
@@ -71,19 +72,19 @@ module  NTSC_TG
 
     wire    Hcy             ;
     reg     [ 9:0]  HCTRs      ;
-    assign  Hcy = & ( ((P_H_SIZE - 1) & HCTRs[9 :0]) | ~(P_H_SIZE -1)) ;
+    assign  Hcy = & ( ((C_H_SIZE - 1) & HCTRs[9 :0]) | ~(C_H_SIZE -1)) ;
     wire            HHcy            ;
-    assign  HHcy = (P_HH_SIZE - 1) ==  HCTRs[9 :0] ;
+    assign  HHcy = (C_HH_SIZE - 1) ==  HCTRs[9 :0] ;
     wire            HSYNC_a ;
     reg             HSYNC   ;
 
-    // h_count 0--P_H_SIZE-1
+    // h_count 0--C_H_SIZE-1
     wire    [10:0]  HCTRs_inc   ;
     assign  HSYNC_a = 
         ( Hcy ) 
         ?
             1'b0
-        : ((P_HSYNC_PORCH-1) == HCTRs[9:0]) 
+        : ((C_HSYNC_PORCH-1) == HCTRs[9:0]) 
         ?     
             1'b1
         :
@@ -97,7 +98,7 @@ module  NTSC_TG
             HSYNC   <= 1'b1 ;
         end else if( CK_EE_i ) 
         begin
-            HCTRs <= ( ~ XR || Hcy) ? 9'h000 : HCTRs_inc[9 :0] ;
+            HCTRs <= ( ~ XR_i || Hcy) ? 9'h000 : HCTRs_inc[9 :0] ;
             HSYNC <=  HSYNC_a ;
         end
 
@@ -154,6 +155,7 @@ module  NTSC_TG
     wire    SYNC_a  ;
     reg     SYNC    ;
     wire    EQU_SYNC_CENTER_now_a ;
+    wire    VSYNC_a  ;
     assign  SYNC_a = 
         ( VSYNC_a ) 
         ?
@@ -190,7 +192,7 @@ module  NTSC_TG
         end else if( CK_EE_i ) 
         begin
             VCTRs <= 
-                ( ~XR ) 
+                ( ~XR_i ) 
                 ?
                     10'h000
                 : (VCY & Hcy) 
@@ -203,7 +205,7 @@ module  NTSC_TG
                     VCTRs
             ;
             FI <= 
-                ( ~ XR) 
+                ( ~ XR_i) 
                 ?
                     1'b0
                 : (v0cy & Hcy ) 
@@ -218,7 +220,6 @@ module  NTSC_TG
         end
     assign FI_o = FI ;
 
-    wire            VSYNC_a ;
     reg             VSYNC   ;
     assign  VSYNC_a = 
         (VCY &  Hcy  &   FI) 
@@ -236,6 +237,9 @@ module  NTSC_TG
         :
             VSYNC
     ;
+    assign Q_HSYNC_o = HSYNC ;
+    assign Q_VSYNC_o = VSYNC ;
+    
     always@(posedge CK_i or negedge XAR_i)
         if( ~ XAR_i)
             VSYNC <= 1'b1 ;
@@ -257,7 +261,7 @@ module  NTSC_TG
         ?
             1'b0
         :
-            /EQU_SYNC_CENTER_now
+           EQU_SYNC_CENTER_now
     ;
     always@(posedge CK_i or negedge XAR_i)
         if( ~ XAR_i)
@@ -277,7 +281,7 @@ module  NTSC_TG
     localparam C_H_BLANK_START = 894 ;
     localparam C_H_BLANK_END = 125   ;
     assign H_BLANK_a = 
-        ((P_H_BLANK_START-1) == HCTRs) 
+        ((C_H_BLANK_START-1) == HCTRs) 
         ?
             1'd1 
         :( C_H_BLANK_END == HCTRs)   
@@ -304,7 +308,7 @@ module  NTSC_TG
     ;
     assign BLANK_a = H_BLANK_a | V_BLANK_a ;
     wire            H_START_a       ;
-    assign H_START_a = (P_H_START-1 == HCTRs[9:0]) ;
+    assign H_START_a = (C_H_START-1 == HCTRs[9:0]) ;
     always@(posedge CK_i or negedge XAR_i)
         if( ~ XAR_i) 
         begin
@@ -319,9 +323,9 @@ module  NTSC_TG
             V_BLANK <= V_BLANK_a ;
             BLANK <=  BLANK_a ;
             H_START <= H_START_a ;
-            V_START <= (P_V_START-1 == VCTRs[9:0]) & H_START_a ;
+            V_START <= (C_V_START-1 == VCTRs[9:0]) & H_START_a ;
         end
-    assign BLANK_o = BLKANK ;
+    assign BLANK_o = BLANK ;
 
     reg BURST   ;
     wire BURST_a ;
@@ -330,10 +334,10 @@ module  NTSC_TG
     assign BURST_a = 
         ~ V_BLANK 
         & (
-            (P_BURST_START-1 == HCTRs) 
+            (C_BURST_START-1 == HCTRs) 
             ?
                 1'b1
-            : (P_BURST_END == HCTRs) 
+            : (C_BURST_END == HCTRs) 
             ?
                 1'b0 
             :
@@ -348,3 +352,74 @@ module  NTSC_TG
     assign BURST_o = BURST ;
 endmodule
 // NTSC_TG.v
+
+
+`timescale 1ns/1ns
+module TB_NTSC_TG
+#(
+    parameter C_C = 10.0
+)(
+) ;
+    reg CK ;
+    reg XAR ;
+    initial
+    begin
+        CK = 1 ;
+        forever
+            #(C_C * 0.5) CK <= ~CK ;
+    end
+    initial
+    begin
+       XAR = 1 ;
+        @(posedge CK) ;
+        @(posedge CK); 
+        #(C_C * 0.5) XAR <= 0 ;
+        @(posedge CK) ;
+        repeat(1)
+            @(posedge CK) ;
+        #(C_C * 0.1) XAR <= 1 ;
+    end
+
+    reg     XR      ;
+    reg     CK_EE ;
+    reg     XHD   ;
+    reg     XVD   ;
+    wire    SYNC  ;
+    wire    BLANK ;
+    wire    BURST ;
+    wire    FI    ;
+    wire    Q_HSYNC ;
+    wire    Q_VSYNC ;
+    NTSC_TG 
+    NTSC_TG 
+    (     
+          .CK_i         ( CK    )
+        , .XAR_i        ( XAR   )
+        , .XR_i         ( XR    )
+        , .CK_EE_i      ( CK_EE )//when use 4fsc clock , make fix 1
+        , .XHD_i        ( XHD   )
+        , .XVD_i        ( XVD   )
+        , .SYNC_o       ( SYNC  )//0:sync
+        , .BLANK_o      ( BLANK )//1:blank
+        , .BURST_o      ( BURST )//1:burst
+        , .FI_o         ( FI    )
+        , .Q_HSYNC_o    ( Q_HSYNC )
+        , .Q_VSYNC_o    ( Q_VSYNC )
+    ) ;
+    integer xx ;
+    initial
+    begin
+        CK_EE <= 1'b1 ;
+        XHD   <= 1'b1 ;
+        XVD   <= 1'b1 ;
+        XR    <= 1'b1 ;
+        repeat(10) 
+            @(posedge CK) ;
+        for(xx=0;xx<910*525*2;xx=xx+1)
+        begin
+            @(posedge CK) ;
+        end
+        $stop ;
+        $finish ;
+    end
+endmodule
