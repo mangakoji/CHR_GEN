@@ -10,17 +10,17 @@
 // 2004-05      : 1st.
 module NTSC_ENC
 (
-      input             CK_i      ;
+      input             CK_i     
     , input tri1        XARST_i 
-    , input             XR      ;
-    , input             CK_EE_i      ;
+    , input tri1        CK_EE_i 
+    , input             XR_i     
     , input [ 7:0] tri0 YYs_i    
     , input [ 7:0] tri0 UUs_i    //2's  */
     , input [ 7:0] tri0 VVs_i    //2's  */
-    , input        tri0 BURST_o   ; //1:BURST */
-    , input        trt0 BLANK_o   ; //1:BLANK */
-    , input        tri1 SYNC_o    ; //0:SYNC */
-    , output[ 9:0]  VIDEOs_o ;
+    , input        tri0 BURST_o   //1:BURST */
+    , input        trt0 BLANK_o    //1:BLANK */
+    , input        tri1 SYNC_o    //0:SYNC */
+    , output[ 9:0]  VIDEOs_o 
 ) ;
     reg     [ 2:0]  VIDEOs   ;
     wire    [ 2:0]  VIDEOs_a ;
@@ -96,13 +96,13 @@ module NTSC_ENC
         if( ~ XARST_i )
             VIDEOs <= 10'd0 ;
         else if( CK_EE_i )
-            VIDEO <= ( ~ XR) ? 3'd0 : VIDEO_a ;
+            VIDEO <= ( ~ XR_i) ? 3'd0 : VIDEO_a ;
     
     reg     [ 1:0]  PHs      ;  // 4fsc auto run , dont extra reset.
     always@(posedge CK_i or negedge XARST_i)
         if( ~ XARST_i)
             PHs <= 2'b0 ;
         else if( CK_EE_i )
-            PHs[1:0] <= ( ~ XR) ? 2'd0 : {2{1'b1}} & (PHs + 2'd1) ;
+            PHs[1:0] <= ( ~ XR_i) ? 2'd0 : {2{1'b1}} & (PHs + 2'd1) ;
 endmodule
 // NTSC_ENC.v

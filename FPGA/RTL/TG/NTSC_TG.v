@@ -2,6 +2,7 @@
 // file_name    : NTSC_TG.v
 // discript     : frame_construction
 //
+//180618u :add HCTR_o ,VCTR_o ; chg name XSYNC_o
 //180426r  prog :match new coding rule
 // 2013-02-23W6 : EE append, and rename names
 // 2009-07-29W3 : coding rule correct
@@ -40,10 +41,12 @@ module  NTSC_TG
     , input tri1    CK_EE_i //when use 4fsc clock , make fix 1
     , input tri1    XHD_i
     , input tri1    XVD_i
-    , output        SYNC_o  //0:sync
+    , output        XSYNC_o  //0:sync
     , output        BLANK_o //1:blank
     , output        BURST_o //1:burst
     , output        FI_o
+    , output[ 9:0]  HCTRs_o
+    , output[ 9:0]  VCTRs_o
     , output        Q_HSYNC_o
     , output        Q_VSYNC_o
 ) ;
@@ -101,7 +104,7 @@ module  NTSC_TG
             HCTRs <= ( ~ XR_i || Hcy) ? 9'h000 : HCTRs_inc[9 :0] ;
             HSYNC <=  HSYNC_a ;
         end
-
+    assign HCTRs_o = HCTRs ;
 
     wire            EQU_SYNC_SIDE_a         ;
     reg             EQU_SYNC_SIDE           ;
@@ -152,11 +155,11 @@ module  NTSC_TG
             EQU_SYNC_CENTER <= EQU_SYNC_CENTER_a ;
         end
 
-    wire    SYNC_a  ;
-    reg     SYNC    ;
+    wire    XSYNC_a  ;
+    reg     XSYNC    ;
     wire    EQU_SYNC_CENTER_now_a ;
     wire    VSYNC_a  ;
-    assign  SYNC_a = 
+    assign  XSYNC_a = 
         ( VSYNC_a ) 
         ?
             HSYNC_a
@@ -168,10 +171,10 @@ module  NTSC_TG
     ;
     always@(posedge CK_i or negedge XAR_i)
         if( ~XAR_i )
-            SYNC <= 1'b1 ;
+            XSYNC <= 1'b0 ;
         else if( CK_EE_i )
-            SYNC <= SYNC_a ;
-    assign SYNC_o = SYNC ;
+            XSYNC <= XSYNC_a ;
+    assign XSYNC_o = XSYNC ;
 
     // v_count 0--262,0--261 repeat
     reg     [ 9 :0] VCTRs   ;
@@ -219,6 +222,7 @@ module  NTSC_TG
             ;
         end
     assign FI_o = FI ;
+    assign VCTRs_o = VCTRs ;
 
     reg             VSYNC   ;
     assign  VSYNC_a = 
