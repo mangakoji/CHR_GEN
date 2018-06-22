@@ -13,7 +13,8 @@
 //2010-01-01?? : 1st.
 module CHR_GEN_TEST_TOP
 (
-      input             FSC32_CK_i
+      input             NFSC_CK_i
+    , input             DAC_CK_i
     , input tri1        XSYS_R_i
     , input tri0 [7:0]  CPU_VRAM_WDs_i
     , input tri0 [9:0]  CPU_VRAM_WAs_i
@@ -41,8 +42,8 @@ module CHR_GEN_TEST_TOP
     reg         FSC4_CK_EE ;
     reg [ 2 :0] FSC4_PRESCALE_CTRs  ;
     wire FSC4_PRESCALE_CTRs_cy ;
-    assign FSC4_PRESCALE_CTRs_cy = (FSC4_PRESCALE_CTRs == 6) ;
-    always@(posedge FSC32_CK_i or negedge XSYS_R_i)
+    assign FSC4_PRESCALE_CTRs_cy = (FSC4_PRESCALE_CTRs == 3) ;
+    always@(posedge NFSC_CK_i or negedge XSYS_R_i)
         if( ~ XSYS_R_i )
         begin
             FSC4_CK_EE <= 1 ;
@@ -63,7 +64,7 @@ module CHR_GEN_TEST_TOP
     NTSC_TG 
     NTSC_TG 
     (
-          .CK_i         ( FSC32_CK_i    )
+          .CK_i         ( NFSC_CK_i    )
         , .XAR_i        ( XSYS_R_i      )
         , .CK_EE_i      ( FSC4_CK_EE    )
         , .XSYNC_o      ( XSYNC      )//0:sync
@@ -79,7 +80,7 @@ module CHR_GEN_TEST_TOP
 
     reg XHD ;
     reg XVD ;
-    always@(posedge FSC32_CK_i or negedge XSYS_R_i)
+    always@(posedge NFSC_CK_i or negedge XSYS_R_i)
         if( ~ XSYS_R_i )
         begin
             XHD <= 1 ;
@@ -93,7 +94,7 @@ module CHR_GEN_TEST_TOP
     reg [7:0] VRAM_WDs ;
     reg [9:0] VRAM_WAs ;
     reg        VRAM_WE ;
-    always@(posedge FSC32_CK_i or negedge XSYS_R_i)
+    always@(posedge NFSC_CK_i or negedge XSYS_R_i)
         if( ~ XSYS_R_i)
         begin
             VRAM_WDs <= 0 ;
@@ -112,7 +113,7 @@ module CHR_GEN_TEST_TOP
     CHR_GEN
     CHR_GEN
     (
-          .CK_i             ( FSC32_CK_i    )
+          .CK_i             ( NFSC_CK_i    )
         , .XAR_i            ( XSYS_R_i      )
         , .CK_EE_i          ( FSC4_CK_EE    )
         , .XHD_i            ( XHD           )
@@ -139,7 +140,7 @@ module CHR_GEN_TEST_TOP
     assign FUCHI_o = FUCHI ;
 
     reg [7:0] YYs ;
-    always@(posedge FSC32_CK_i or negedge XSYS_R_i)
+    always@(posedge NFSC_CK_i or negedge XSYS_R_i)
         if( ~ XSYS_R_i )
             YYs <= 0 ;
         else if( FSC4_CK_EE )
@@ -154,7 +155,7 @@ module CHR_GEN_TEST_TOP
     NTSC_ENC_TINY
     NTSC_ENC_TINY
     (
-          . CK_i    ( FSC32_CK_i    )
+          . CK_i    ( NFSC_CK_i    )
         , .XAR_i    ( XSYS_R_i      )
         , .CK_EE_i  ( FSC4_CK_EE    )
         , .YYs_i    ( YYs           )
@@ -166,7 +167,7 @@ module CHR_GEN_TEST_TOP
     // 
     reg [9:0] VIDEOs_Ds [0:7] ;
     reg [9:0] VIDEOs_DD ;
-    always@(posedge FSC32_CK_i or negedge XSYS_R_i)
+    always@(posedge NFSC_CK_i or negedge XSYS_R_i)
         if( ~ XSYS_R_i)
         begin
             VIDEOs_Ds[0] <= 0 ;
@@ -206,7 +207,7 @@ module CHR_GEN_TEST_TOP
     #(
         .C_DAT_W    ( 10 )
     )(
-          .CK       ( FSC32_CK_i    )
+          .CK       ( DAC_CK_i    )
         , .XARST_i  ( XSYS_R_i      )
         , .DAT_i    ( VIDEOs     )
         , .QQ_o     ( VIDEO_o       )

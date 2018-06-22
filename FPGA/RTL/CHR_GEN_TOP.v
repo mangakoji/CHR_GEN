@@ -11,6 +11,7 @@
 module CHR_GEN_TOP
 (
       input     CK48M_i     //27
+    , input     P29_i
     , input     XPSW_i      //123
     , output    XLED_R_o   //120
     , output    XLED_G_o   //122
@@ -71,18 +72,17 @@ module CHR_GEN_TOP
 
 
     // start
-    wire            FSC32_CK        ;
-//    wire            FSC40_CK        ;
+    wire            NFSC_CK        ;
+    wire            DAC_CK        ;
     wire            CK              ;
     wire            XSYS_R           ;
-    assign CK = CK48M_i ;
     PLL 
     PLL
     (
               .areset       ( 1'b0          )
-            , .inclk0       ( CK48M_i       )
-            , .c0           ( FSC32_CK       )
-//            , .c1           ( FSC40_CK      )
+            , .inclk0       ( P29_i       )
+            , .c0           ( NFSC_CK       )
+            , .c1           ( DAC_CK      )
             , .locked       ( XSYS_R         )
     ) ;
 
@@ -107,7 +107,8 @@ module CHR_GEN_TOP
     CHR_GEN_TEST_TOP
     CHR_GEN_TEST_TOP
     (
-          .FSC32_CK_i       ( FSC32_CK  )
+          .NFSC_CK_i       ( NFSC_CK  )
+        , .DAC_CK_i        ( DAC_CK  )
         , .XSYS_R_i         ( XSYS_R    )
 //        , .CPU_VRAM_WDs_i   ()
 //        , .CPU_VRAM_WAs_i   ()
