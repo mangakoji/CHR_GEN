@@ -11,7 +11,7 @@
 module CHR_GEN_TOP
 (
       input     CK48M_i     //27
-    , input     P29_i
+    , input     P29
     , input     XPSW_i      //123
     , output    XLED_R_o   //120
     , output    XLED_G_o   //122
@@ -80,7 +80,7 @@ module CHR_GEN_TOP
     PLL
     (
               .areset       ( 1'b0          )
-            , .inclk0       ( P29_i       )
+            , .inclk0       ( P29           )
             , .c0           ( NFSC_CK       )
             , .c1           ( DAC_CK      )
             , .locked       ( XSYS_R         )
