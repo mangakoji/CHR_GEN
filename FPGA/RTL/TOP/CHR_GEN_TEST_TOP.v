@@ -1,9 +1,10 @@
 //CHR_GEN.vhd<
 //CHR_GEN()
 // by @mangakoji
-// license by BSD
+// license on BSD
 //      without font ROM data
 //
+//180623s       :append XVD_o,XVD_o
 //180617s       :syntax check passed 
 //180426f       :mod for new coding rule
 //2018-03-12m   :mod net naming rule xxxs
@@ -16,6 +17,7 @@ module CHR_GEN_TEST_TOP
       input             NFSC_CK_i
     , input             DAC_CK_i
     , input tri1        XSYS_R_i
+    , input tri1        VRAM_WE_i
     , input tri0 [7:0]  CPU_VRAM_WDs_i
     , input tri0 [9:0]  CPU_VRAM_WAs_i
     , input tri0        CPU_VRAM_WE_i
@@ -28,8 +30,11 @@ module CHR_GEN_TEST_TOP
     , input tri0 [7:0]  BUS_H_SCROLLs
     , input tri0 [7:0]  BUS_V_SCROLLs
     , input tri0        BUS_FUCHI_MASK
+    , input tri1        BUS_OSD_ON
     , output        VIDEO_o
     //
+    , output        XHD_o
+    , output        XVD_o
     , output        XSYNC_o
     , output        BLANK_o
     , output        BURST_o
@@ -90,6 +95,8 @@ module CHR_GEN_TEST_TOP
             XHD <= ~ (HCTRs == (910-1)) ;
             XVD <= ~ (VCTRs  == 0) ;
         end
+    assign XHD_o = XHD ;
+    assign XVD_o = XVD ;
 
     reg [7:0] VRAM_WDs ;
     reg [9:0] VRAM_WAs ;
@@ -120,7 +127,7 @@ module CHR_GEN_TEST_TOP
         , .XVD_i            ( XVD           )
         , .VRAM_WDs_i       ( VRAM_WDs      )
         , .VRAM_WAs_i       ( VRAM_WAs      )
-        , .VRAM_WE_i        ( VRAM_WE       )
+        , .VRAM_WE_i        ( VRAM_WE_i     )
         , .CPU_VRAM_WDs_i   ( CPU_VRAM_WDs_i    )
         , .CPU_VRAM_WAs_i   ( CPU_VRAM_WAs_i    )
         , .CPU_VRAM_WE_i    ( CPU_VRAM_WE_i     )
@@ -144,10 +151,13 @@ module CHR_GEN_TEST_TOP
         if( ~ XSYS_R_i )
             YYs <= 0 ;
         else if( FSC4_CK_EE )
-            if( CHAR )
-                YYs <= 8'd220 ;
-            else if( FUCHI )
-                YYs <= 8'h00 ;
+            if( BUS_OSD_ON)
+                if( CHAR )
+                    YYs <= 8'd220 ;
+                else if( FUCHI )
+                    YYs <= 8'h00 ;
+                else
+                    YYs <= 8'd110 ;
             else
                 YYs <= 8'd110 ;
     assign YYs_o = YYs ;

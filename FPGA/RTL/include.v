@@ -1,3 +1,5 @@
+//180623s
+`include "./CHR_GEN_TOP.v"
 `include "../IP/PLL/PLL.v"
 `include "./MISC/DP_RAM.v"
 `include "./MISC/DELTA_SIGMA_1BIT_DAC.v"
@@ -6,4 +8,3 @@
 `include "./CHR_GEN/ichigojamfont_v12.v"
 `include "./CHR_GEN/CHR_GEN.v"
 `include "./TOP/CHR_GEN_TEST_TOP.v"
-`include "./CHR_GEN_TOP.v"
