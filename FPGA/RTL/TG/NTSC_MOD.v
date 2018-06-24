@@ -22,6 +22,8 @@ module NTSC_MOD
     , input tri0        BURST_i   //1:BURST */
     , input tri0        BLANK_i    //1:BLANK */
     , input tri1        XSYNC_i    //0:SYNC */
+    , output [10:0] VIDEOs_aa_o 
+    , output [ 8:0] VIDEOs_a_o 
     , output[ 8:0]  VIDEOs_o 
 ) ;
     // main part
@@ -47,24 +49,26 @@ module NTSC_MOD
     wire    [ 7 :0]  chroma_s   ;
     function [7:0] f_chroma_s ;
         input [1:0] PHs ;
+        input [7:0] UUs ;
+        input [7:0] VVs ;
     begin
         if(BLANK_i & ~BURST_i)
             f_chroma_s = 8'h00 ;
         else
             case( PHs )
                 2'b00 :
-                    f_chroma_s = UUs_y ;
+                    f_chroma_s = UUs ;
                 2'b01 :
-                    f_chroma_s = VVs_y ;
+                    f_chroma_s = VVs ;
                 2'b10 :
-                    f_chroma_s = -UUs_y   ;
+                    f_chroma_s = -UUs   ;
                 2'b11 :
-                    f_chroma_s = -VVs_y ;
+                    f_chroma_s = -VVs ;
                 default :
                     f_chroma_s = 8'h00 ;
             endcase
     end endfunction
-    assign chroma_s = f_chroma_s( PHs ) ;
+    assign chroma_s = f_chroma_s( PHs , UUs_y , VVs_y) ;
     wire    [8 :0]  YYs_y      ;
     assign YYs_y =
         ( ~ XSYNC_i ) 
@@ -79,6 +83,7 @@ module NTSC_MOD
 
     wire [10 :0]    VIDEOs_aa    ;
     assign VIDEOs_aa =  {2'b00, YYs_y} + $signed( chroma_s ) ;
+    assign VIDEOs_aa_o = VIDEOs_aa ;
     wire [ 8 :0]    VIDEOs_a ;
     assign VIDEOs_a =
         (VIDEOs_aa[ 10 ] &  ~VIDEOs_aa[ 9 ]) 
@@ -90,6 +95,7 @@ module NTSC_MOD
         :
             VIDEOs_aa[ 8 :0]
     ;
+    assign VIDEOs_a_o = VIDEOs_a ;
 
     reg     [ 8:0]  VIDEOs   ;
     always@(posedge CK_i or negedge XAR_i)
@@ -97,7 +103,7 @@ module NTSC_MOD
             VIDEOs <= 9'h080 ;
         else if( CK_EE_i )
             VIDEOs <= ( ~ XR_i) ? 9'h080 : VIDEOs_a ;
-
+    assign VIDEOs_o = VIDEOs ;
 
     // timing part
     reg     [ 1:0]  PHs      ;  // 4fsc auto run , dont extra reset.

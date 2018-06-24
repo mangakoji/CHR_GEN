@@ -256,10 +256,10 @@ module CHR_GEN_TEST_TOP
         end
     assign VIDEOs_DD_o = VIDEOs_DD ;
     DELTA_SIGMA_1BIT_DAC 
-    DELTA_SIGMA_1BIT_DAC 
     #(
         .C_DAT_W    ( 9 )
-    )(
+    ) DELTA_SIGMA_1BIT_DAC 
+    (
           .CK       ( DAC_CK_i    )
         , .XARST_i  ( XSYS_R_i      )
         , .DAT_i    ( VIDEOs     )
