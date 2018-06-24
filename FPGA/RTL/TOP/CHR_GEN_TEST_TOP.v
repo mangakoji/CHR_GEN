@@ -178,7 +178,7 @@ module CHR_GEN_TEST_TOP
             if( BUS_OSD_ON & (CHAR  | FUCHI))
                 if( CHAR )
                 begin
-                    YYs <= 8'd220 ;
+                    YYs <= 8'hFF ;
                     UUs <= 0 ;
                     VVs <= 0 ;
                 end else if( FUCHI )
@@ -199,8 +199,8 @@ module CHR_GEN_TEST_TOP
                 VVs <= BUS_VV ;
             end
     assign YYs_o = YYs ;
+
     wire [8:0] VIDEOs ;
-    
     NTSC_MOD
     NTSC_MOD
     (
@@ -210,6 +210,7 @@ module CHR_GEN_TEST_TOP
         , .YYs_i    ( YYs           )
         , .UUs_i    ( UUs           )
         , .VVs_i    ( VVs           )
+        , .BURST_i  ( BURST         )
         , .BLANK_i  ( BLANK         ) //1:BLANK */
         , .XSYNC_i  ( XSYNC         ) //0:SYNC */
         , .VIDEOs_o ( VIDEOs        )
@@ -254,6 +255,7 @@ module CHR_GEN_TEST_TOP
             ;
         end
     assign VIDEOs_DD_o = VIDEOs_DD ;
+    DELTA_SIGMA_1BIT_DAC 
     DELTA_SIGMA_1BIT_DAC 
     #(
         .C_DAT_W    ( 9 )

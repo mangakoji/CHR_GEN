@@ -202,7 +202,7 @@ module CHR_GEN_TOP
     assign CPU_VRAM_WAs     = B_REGC[9 : 0] ;
     assign CPU_VRAM_WDs     = B_REGC[7 : 0] ;
     assign CPU_VRAM_WE      = B_REGC[14]    ;
-//    assign BUS_OSD_CPU_USE  = B_REGC[15]    ;
+    assign BUS_OSD_CPU_USE  = B_REGC[15]    ;
     assign BUS_H_DLYs       = B_REG8[11 : 0] ;
     assign BUS_V_DLYs       = B_REG9[10 : 0] ;
     assign BUS_H_MAGs       = B_REGA[ 2 : 0] ;
@@ -210,7 +210,7 @@ module CHR_GEN_TOP
     assign BUS_H_SCROLLs    = B_REGB[ 7 : 0] ;
     assign BUS_V_SCROLLs    = B_REGB[15 : 8] ;
     assign BUS_FUCHI_MASK   = B_REGA[ 14 ]  ;
-//    assign BUS_OSD_OFF      = B_REGA[ 15 ]  ;   //
+    assign BUS_OSD_OFF      = B_REGA[ 15 ]  ;   //
     assign BUS_RGB          = B_REGD[ 15 ] ;
     assign BUS_YY           = B_REGD[ 7: 0] ;
     assign BUS_UU           = B_REGE[15: 8] ;
