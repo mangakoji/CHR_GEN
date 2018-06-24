@@ -103,6 +103,9 @@ module CHR_GEN_TOP
     wire [7:0]  BUS_V_SCROLLs       ;
     wire        BUS_FUCHI_MASK      ;
     wire        BUS_RGB             ;
+    wire [7:0]  BUS_YY ;
+    wire [7:0]  BUS_UU ;
+    wire [7:0]  BUS_VV ;
     wire        VIDEO   ;
     wire        XHD     ;
     wire        XVD     ;

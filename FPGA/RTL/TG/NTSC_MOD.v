@@ -59,11 +59,11 @@ module NTSC_MOD
                 2'b00 :
                     f_chroma_s = UUs ;
                 2'b01 :
-                    f_chroma_s = VVs ;
+                    f_chroma_s = -VVs ;
                 2'b10 :
                     f_chroma_s = -UUs   ;
                 2'b11 :
-                    f_chroma_s = -VVs ;
+                    f_chroma_s =  VVs ;
                 default :
                     f_chroma_s = 8'h00 ;
             endcase

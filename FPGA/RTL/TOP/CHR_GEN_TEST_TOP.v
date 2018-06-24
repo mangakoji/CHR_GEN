@@ -30,7 +30,6 @@ module CHR_GEN_TEST_TOP
     , input tri0 [7:0]  BUS_H_SCROLLs
     , input tri0 [7:0]  BUS_V_SCROLLs
     , input tri0        BUS_FUCHI_MASK
-    , input tri1        BUS_OSD_ON
     , input tri0        BUS_RGB
     , input tri0 [7:0]  BUS_YY
     , input tri0 [7:0]  BUS_UU
@@ -178,19 +177,17 @@ module CHR_GEN_TEST_TOP
             UUs <= 0 ;
             VVs <= 0 ;
         end else if( FSC4_CK_EE )
-            if( BUS_OSD_ON & (CHAR  | FUCHI))
-                if( CHAR )
-                begin
-                    YYs <= 8'hFF ;
-                    UUs <= 0 ;
-                    VVs <= 0 ;
-                end else if( FUCHI )
-                begin
-                    YYs <= 8'h00 ;
-                    UUs <= 0 ;
-                    VVs <= 0 ;
-                end
-            else if( BUS_RGB )
+            if( CHAR )
+            begin
+                 YYs <= 8'hFF ;
+                 UUs <= 0 ;
+                 VVs <= 0 ;
+            end else if( FUCHI )
+            begin
+                 YYs <= 8'h00 ;
+                 UUs <= 0 ;
+                 VVs <= 0 ;
+            end else if( BUS_RGB )
             begin
                 YYs <= YYs_NTSC ;
                 UUs <= UUs_NTSC ;
