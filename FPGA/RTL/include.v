@@ -1,10 +1,12 @@
 //180623s
+`include "./TG/NTSC_MOD.v"
 `include "./CHR_GEN_TOP.v"
+`include "./TG/NTSC_RGB2YUV.v"
 `include "../IP/PLL/PLL.v"
 `include "./MISC/DP_RAM.v"
 `include "./MISC/DELTA_SIGMA_1BIT_DAC.v"
 `include "./TG/NTSC_TG.v"
-`include "./TOP/NTSC_ENC_TINY.v"
+//`include "./TOP/NTSC_ENC_TINY.v"
 `include "./CHR_GEN/ichigojamfont_v12.v"
 `include "./CHR_GEN/CHR_GEN.v"
 `include "./TOP/CHR_GEN_TEST_TOP.v"

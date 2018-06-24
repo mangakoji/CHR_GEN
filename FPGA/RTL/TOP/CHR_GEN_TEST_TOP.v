@@ -31,6 +31,7 @@ module CHR_GEN_TEST_TOP
     , input tri0 [7:0]  BUS_V_SCROLLs
     , input tri0        BUS_FUCHI_MASK
     , input tri1        BUS_OSD_ON
+    , input tri0        BUS_RGB
     , output        VIDEO_o
     //
     , output        XHD_o
@@ -146,37 +147,77 @@ module CHR_GEN_TEST_TOP
     assign CHAR_o = CHAR ;
     assign FUCHI_o = FUCHI ;
 
+    wire [ 7 :0] YYs_NTSC ;
+    wire [ 7 :0] UUs_NTSC ;
+    wire [ 7 :0] VVs_NTSC ;
+    NTSC_RGB2YUV
+    NTSC_RGB2YUV
+    (
+          . CK_i    ( NFSC_CK_i     )
+        , .XAR_i    ( XSYS_R_i      )
+        , .CK_EE_i  ( FSC4_CK_EE    )
+        , .DATs_R_i ( BUS_YY        )
+        , .DATs_G_i ( BUS_UU        )
+        , .DATs_B_i ( BUS_VV        )
+        , .YYs_o    ( YYs_NTSC      )
+        , .UUs_o    ( UUs_NTSC      )
+        , .VVs_o    ( VVs_NTSC      )
+        
+    ) ;
+    
     reg [7:0] YYs ;
+    reg [7:0] UUs ;
+    reg [7:0] VVs ;
     always@(posedge NFSC_CK_i or negedge XSYS_R_i)
         if( ~ XSYS_R_i )
+        begin
             YYs <= 0 ;
-        else if( FSC4_CK_EE )
-            if( BUS_OSD_ON)
+            UUs <= 0 ;
+            VVs <= 0 ;
+        end else if( FSC4_CK_EE )
+            if( BUS_OSD_ON & (CHAR  | FUCHI))
                 if( CHAR )
+                begin
                     YYs <= 8'd220 ;
-                else if( FUCHI )
+                    UUs <= 0 ;
+                    VVs <= 0 ;
+                end else if( FUCHI )
+                begin
                     YYs <= 8'h00 ;
-                else
-                    YYs <= 8'd110 ;
-            else
-                YYs <= 8'd110 ;
+                    UUs <= 0 ;
+                    VVs <= 0 ;
+                end
+            else if( BUS_RGB )
+            begin
+                YYs <= YYs_NTSC ;
+                UUs <= UUs_NTSC ;
+                VVs <= VVs_NTSC ;
+            end else
+            begin
+                YYs <= BUS_YY ;
+                UUs <= BUS_UU ;
+                VVs <= BUS_VV ;
+            end
     assign YYs_o = YYs ;
-    wire [9:0] VIDEOs ;
-    NTSC_ENC_TINY
-    NTSC_ENC_TINY
+    wire [8:0] VIDEOs ;
+    
+    NTSC_MOD
+    NTSC_MOD
     (
           . CK_i    ( NFSC_CK_i    )
         , .XAR_i    ( XSYS_R_i      )
         , .CK_EE_i  ( FSC4_CK_EE    )
         , .YYs_i    ( YYs           )
+        , .UUs_i    ( UUs           )
+        , .VVs_i    ( VVs           )
         , .BLANK_i  ( BLANK         ) //1:BLANK */
         , .XSYNC_i  ( XSYNC         ) //0:SYNC */
         , .VIDEOs_o ( VIDEOs        )
     ) ;
     assign VIDEOs_o = VIDEOs ;
     // 
-    reg [9:0] VIDEOs_Ds [0:7] ;
-    reg [9:0] VIDEOs_DD ;
+    reg [8:0] VIDEOs_Ds [0:7] ;
+    reg [8:0] VIDEOs_DD ;
     always@(posedge NFSC_CK_i or negedge XSYS_R_i)
         if( ~ XSYS_R_i)
         begin
@@ -215,7 +256,7 @@ module CHR_GEN_TEST_TOP
     assign VIDEOs_DD_o = VIDEOs_DD ;
     DELTA_SIGMA_1BIT_DAC 
     #(
-        .C_DAT_W    ( 10 )
+        .C_DAT_W    ( 9 )
     )(
           .CK       ( DAC_CK_i    )
         , .XARST_i  ( XSYS_R_i      )

@@ -102,6 +102,7 @@ module CHR_GEN_TOP
     wire [7:0]  BUS_H_SCROLLs       ;
     wire [7:0]  BUS_V_SCROLLs       ;
     wire        BUS_FUCHI_MASK      ;
+    wire        BUS_RGB             ;
     wire        VIDEO   ;
     wire        XHD     ;
     wire        XVD     ;
@@ -128,6 +129,7 @@ module CHR_GEN_TOP
         , .BUS_H_SCROLLs    (BUS_H_SCROLLs      )
         , .BUS_V_SCROLLs    (BUS_V_SCROLLs      )
         , .BUS_FUCHI_MASK   (BUS_FUCHI_MASK     )
+        , .BUS_RGB          ( BUS_RGB           )
         , .VIDEO_o          ( VIDEO     )
         , .XHD_o            ( XHD       )
         , .XVD_o            ( XVD       )
@@ -200,7 +202,7 @@ module CHR_GEN_TOP
     assign CPU_VRAM_WAs     = B_REGC[9 : 0] ;
     assign CPU_VRAM_WDs     = B_REGC[7 : 0] ;
     assign CPU_VRAM_WE      = B_REGC[14]    ;
-    assign BUS_ODS_CPU_USE  = B_REGC[15]    ;
+//    assign BUS_OSD_CPU_USE  = B_REGC[15]    ;
     assign BUS_H_DLYs       = B_REG8[11 : 0] ;
     assign BUS_V_DLYs       = B_REG9[10 : 0] ;
     assign BUS_H_MAGs       = B_REGA[ 2 : 0] ;
@@ -208,7 +210,11 @@ module CHR_GEN_TOP
     assign BUS_H_SCROLLs    = B_REGB[ 7 : 0] ;
     assign BUS_V_SCROLLs    = B_REGB[15 : 8] ;
     assign BUS_FUCHI_MASK   = B_REGA[ 14 ]  ;
-    assign BUS_OSD_ON       = B_REGA[ 15 ]  ;   //
+//    assign BUS_OSD_OFF      = B_REGA[ 15 ]  ;   //
+    assign BUS_RGB          = B_REGD[ 15 ] ;
+    assign BUS_YY           = B_REGD[ 7: 0] ;
+    assign BUS_UU           = B_REGE[15: 8] ;
+    assign BUS_VV           = B_REGE[ 7: 0] ;
     assign VRAM_WE          = ~ B_REGC[13]  ;   //
     assign VIRQ_EXPORT = {6'b0000_00, XHD , XVD} ;
 
