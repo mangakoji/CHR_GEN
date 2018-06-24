@@ -32,6 +32,9 @@ module CHR_GEN_TEST_TOP
     , input tri0        BUS_FUCHI_MASK
     , input tri1        BUS_OSD_ON
     , input tri0        BUS_RGB
+    , input tri0 [7:0]  BUS_YY
+    , input tri0 [7:0]  BUS_UU
+    , input tri0 [7:0]  BUS_VV
     , output        VIDEO_o
     //
     , output        XHD_o
