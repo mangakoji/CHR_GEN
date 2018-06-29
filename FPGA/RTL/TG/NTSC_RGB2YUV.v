@@ -2,6 +2,7 @@
 // file_name    : NTSC_RGB2YUV.v
 // descript     : for 4fsc 
 //
+//180629f :fix RGB ratio to Y
 //180624u: 1st.
 module NTSC_RGB2YUV
 (
@@ -16,10 +17,10 @@ module NTSC_RGB2YUV
     , output [ 7:0] VVs_o
 ) ;
 
-    // Y = (77R+ 154G + 26B)/256
+    // Y = (77R+ 150G + 29B)/256
     localparam C_K_R = 8'h4D ;
-    localparam C_K_G = 8'h9A ;
-    localparam C_K_B = 8'h1A ;
+    localparam C_K_G = 8'h96 ;
+    localparam C_K_B = 8'h1D ;
 
     wire [15:0] yy_s ;
     assign yy_s = 
