@@ -211,12 +211,9 @@ module CHR_GEN_TEST_TOP
                  VVs <= 0 ;
             end else if( ~ BUS_DC_YUV )
             begin
-//                YYs <= YYs_NTSC ;
-//                UUs <= UUs_NTSC ;
-//                VVs <= VVs_NTSC ;
-                YYs <= TEST_DATs_G ;
-                UUs <= TEST_DATs_B ;
-                VVs <= TEST_DATs_B ;
+                YYs <= YYs_NTSC ;
+                UUs <= UUs_NTSC ;
+                VVs <= VVs_NTSC ;
             end else
             begin
                 YYs <= BUS_YY ;
