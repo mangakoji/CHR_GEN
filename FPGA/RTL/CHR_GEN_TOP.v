@@ -3,6 +3,7 @@
 // by @mangakoji 
 // Licensed on MIT
 //
+//180630s   A :add TEST_PATTERN()
 //180623s   A :add CPU
 //180616s   A :new for CHR_GEN_TOP.v
 //170323r   001 :retruct ORGAN
@@ -102,7 +103,8 @@ module CHR_GEN_TOP
     wire [7:0]  BUS_H_SCROLLs       ;
     wire [7:0]  BUS_V_SCROLLs       ;
     wire        BUS_FUCHI_MASK      ;
-    wire        BUS_RGB             ;
+    wire        BUS_DC_YUV          ;
+    wire        BUS_DC_PTN          ;
     wire [7:0]  BUS_YY ;
     wire [7:0]  BUS_UU ;
     wire [7:0]  BUS_VV ;
@@ -132,7 +134,8 @@ module CHR_GEN_TOP
         , .BUS_H_SCROLLs    ( BUS_H_SCROLLs     )
         , .BUS_V_SCROLLs    ( BUS_V_SCROLLs     )
         , .BUS_FUCHI_MASK   ( BUS_FUCHI_MASK    )
-        , .BUS_RGB          ( BUS_RGB           )
+        , .BUS_DC_YUV       ( BUS_DC_YUV        )
+        , .BUS_DC_PTN       ( BUS_DC_PTN        )
         , .BUS_YY           ( BUS_YY            )
         , .BUS_UU           ( BUS_UU            )
         , .BUS_VV           ( BUS_VV            )
@@ -217,7 +220,8 @@ module CHR_GEN_TOP
     assign BUS_V_SCROLLs    = B_REGB[15 : 8] ;
     assign BUS_FUCHI_MASK   = B_REGA[ 14 ]  ;
     assign BUS_OSD_OFF      = B_REGA[ 15 ]  ;   //
-    assign BUS_RGB          = B_REGD[ 15 ] ;
+    assign BUS_DC_YUV          = B_REGD[ 15 ] ;
+    assign BUS_DC_PTN       = B_REGD[ 14 ] ;
     assign BUS_YY           = B_REGD[ 7: 0] ;
     assign BUS_UU           = B_REGE[15: 8] ;
     assign BUS_VV           = B_REGE[ 7: 0] ;

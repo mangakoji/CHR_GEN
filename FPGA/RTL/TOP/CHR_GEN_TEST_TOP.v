@@ -4,6 +4,7 @@
 // license on BSD
 //      without font ROM data
 //
+//180630s       :add TEST_PATTRERN
 //180623s       :append XVD_o,XVD_o
 //180617s       :syntax check passed 
 //180426f       :mod for new coding rule
@@ -30,7 +31,8 @@ module CHR_GEN_TEST_TOP
     , input tri0 [7:0]  BUS_H_SCROLLs
     , input tri0 [7:0]  BUS_V_SCROLLs
     , input tri0        BUS_FUCHI_MASK
-    , input tri0        BUS_RGB
+    , input tri0        BUS_DC_PTN
+    , input tri0        BUS_DC_YUV
     , input tri0 [7:0]  BUS_YY
     , input tri0 [7:0]  BUS_UU
     , input tri0 [7:0]  BUS_VV
@@ -101,6 +103,26 @@ module CHR_GEN_TEST_TOP
     assign XHD_o = XHD ;
     assign XVD_o = XVD ;
 
+
+    wire [ 7 :0]    TEST_DATs_R ;
+    wire [ 7 :0]    TEST_DATs_G ;
+    wire [ 7 :0]    TEST_DATs_B ;
+    TEST_PATTERN
+    TEST_PATTERN
+    (
+          .CK_i         ( NFSC_CK_i     )
+        , .XAR_i        ( XSYS_R_i      )
+        , .CK_EE_i      ( FSC4_CK_EE    )
+        , .XVRST_i      ( XVD           )
+        , .QQs_R_o     ( TEST_DATs_R   )
+        , .QQs_G_o     ( TEST_DATs_G   )
+        , .QQs_B_o      ( TEST_DATs_B   )
+//        , .HCTRs_o      ()
+//        , .VCTRs_o      ()
+//        , .FCTRs_o      ()
+    ) ;
+
+
     reg [7:0] VRAM_WDs ;
     reg [9:0] VRAM_WAs ;
     reg        VRAM_WE ;
@@ -115,7 +137,7 @@ module CHR_GEN_TEST_TOP
             VRAM_WDs <= VRAM_WDs + 1 ;
             VRAM_WAs <= VRAM_WAs + 1 ;
             VRAM_WE <= 1 ;
-        end            
+        end
 
 
     wire    CHAR ;
@@ -158,9 +180,9 @@ module CHR_GEN_TEST_TOP
           . CK_i    ( NFSC_CK_i     )
         , .XAR_i    ( XSYS_R_i      )
         , .CK_EE_i  ( FSC4_CK_EE    )
-        , .DATs_R_i ( BUS_YY        )
-        , .DATs_G_i ( BUS_UU        )
-        , .DATs_B_i ( BUS_VV        )
+        , .DATs_R_i ( (BUS_DC_PTN) ? BUS_YY : TEST_DATs_R  )
+        , .DATs_G_i ( (BUS_DC_PTN) ? BUS_UU : TEST_DATs_G   )
+        , .DATs_B_i ( (BUS_DC_PTN) ? BUS_VV : TEST_DATs_B   )
         , .YYs_o    ( YYs_NTSC      )
         , .UUs_o    ( UUs_NTSC      )
         , .VVs_o    ( VVs_NTSC      )
@@ -187,11 +209,14 @@ module CHR_GEN_TEST_TOP
                  YYs <= 8'h00 ;
                  UUs <= 0 ;
                  VVs <= 0 ;
-            end else if( BUS_RGB )
+            end else if( ~ BUS_DC_YUV )
             begin
-                YYs <= YYs_NTSC ;
-                UUs <= UUs_NTSC ;
-                VVs <= VVs_NTSC ;
+//                YYs <= YYs_NTSC ;
+//                UUs <= UUs_NTSC ;
+//                VVs <= VVs_NTSC ;
+                YYs <= TEST_DATs_G ;
+                UUs <= TEST_DATs_B ;
+                VVs <= TEST_DATs_B ;
             end else
             begin
                 YYs <= BUS_YY ;

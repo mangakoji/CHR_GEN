@@ -1,4 +1,5 @@
 //180623s
+`include "./TG/TEST_PATTERN.v"
 `include "./TG/NTSC_MOD.v"
 `include "./CHR_GEN_TOP.v"
 `include "./TG/NTSC_RGB2YUV.v"
