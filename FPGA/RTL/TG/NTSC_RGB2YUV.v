@@ -29,20 +29,28 @@ module NTSC_RGB2YUV
         + C_K_B * DATs_B_i
     ;
     reg [ 7 :0]     YYs_AQ ;
+    reg [ 7 :0]     DATs_B_D ;
+    reg [ 7 :0]     DATs_R_D ;
     always@(posedge CK_i or negedge XAR_i) 
         if( ~ XAR_i)
+        begin
             YYs_AQ <= 8'd0 ;
-        else if( CK_EE_i )
+            DATs_B_D <= 8'd0 ;
+            DATs_R_D <= 8'd0 ;
+        end else if( CK_EE_i )
+        begin
             YYs_AQ <= (0+yy_s) >> 8 ;
-
+            DATs_B_D <= DATs_B_i ;
+            DATs_R_D <= DATs_R_i ;
+        end
     // C_K_U = 256/2.03 =126
     // C_K_V = 256/1.14 = 224
     localparam C_K_U = 8'h7E ;
     localparam C_K_V = 8'hE0 ;
     wire signed [16:0] uu_s ;
     wire signed [16:0] vv_s ;
-    assign uu_s = (0+DATs_B_i - (0+YYs_AQ)) * C_K_U ;
-    assign vv_s = (0+DATs_R_i - (0+YYs_AQ)) * C_K_V ;
+    assign uu_s = (0+DATs_B_D - (0+YYs_AQ)) * C_K_U ;
+    assign vv_s = (0+DATs_R_D - (0+YYs_AQ)) * C_K_V ;
 
     reg     [ 8:0]  VIDEOs   ;
     wire    [9:0]  VIDEOs_a ;
@@ -60,11 +68,11 @@ module NTSC_RGB2YUV
         end else if( CK_EE_i)
         begin
             YYs <= YYs_AQ ;
-            if(  uu_s[16:15]==2'b10 )
-                UUs <= 8'h80 ;
-            else if( uu_s[16:15]==2'b01 )
-                UUs <= 8'h7F ;
-            else
+//            if(  uu_s[16:15]==2'b10 )
+//                UUs <= 8'h80 ;
+//            else if( uu_s[16:15]==2'b01 )
+//                UUs <= 8'h7F ;
+//            else
                 UUs <= (0+uu_s)>>> 8 ;
 
             if( vv_s[16:15]==2'b10 )
