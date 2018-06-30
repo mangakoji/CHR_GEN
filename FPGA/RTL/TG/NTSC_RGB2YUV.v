@@ -60,8 +60,19 @@ module NTSC_RGB2YUV
         end else if( CK_EE_i)
         begin
             YYs <= YYs_AQ ;
-            UUs <= (0+uu_s)>>> 8 ;
-            VVs <= (0+vv_s)>>> 8 ;
+            if(  uu_s[16:15]==2'b10 )
+                UUs <= 8'h80 ;
+            else if( uu_s[16:15]==2'b01 )
+                UUs <= 8'h7F ;
+            else
+                UUs <= (0+uu_s)>>> 8 ;
+
+            if( vv_s[16:15]==2'b10 )
+                VVs <= 8'h80 ;
+            else if( vv_s[16:15]==2'b01 )
+                VVs <= 8'h7F ;
+            else
+                VVs <= (0+vv_s)>>> 8 ;
         end 
     assign YYs_o = YYs ;
     assign UUs_o = UUs ;
