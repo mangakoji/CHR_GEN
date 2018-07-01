@@ -1,6 +1,7 @@
 // DP_RAM.v
 //  DP_RAM()
 //
+//180701u       :touch for ModelSim
 //180531r       :mod sig name
 //180426r       :mod new coding rule
 //2018-03-09f   :mod new coding rule like BSD style
@@ -95,6 +96,7 @@ module DP_RAM_BRG
     
 
     wire [C_DAT_W-1:0]   RDs ;
+    reg [C_ADR_W-1:0]   RAs ;
     DP_RAM
     #( 
           .C_DAT_W  (  8    )
@@ -110,7 +112,6 @@ module DP_RAM_BRG
         , .RAs_i    ( RAs )
         , .RDs_o    ( RDs ) 
     ) ;  
-    reg [C_ADR_W-1:0]   RAs ;
     reg [C_DAT_W-1:0]   Q_RDs ;
     always@(posedge R_CK_i or negedge XAR_i)
         if( ~ XAR_i)

@@ -22,13 +22,13 @@ module TEST_PATTERN
     , output [ 7 :0]        QQs_R_o
     , output [ 7 :0]        QQs_G_o
     , output [ 7 :0]        QQs_B_o
-    , output [15 :0]        HCTRs_o
-    , output [15 :0]        VCTRs_o
+    , output [ 9 :0]        HCTRs_o
+    , output [ 8 :0]        VCTRs_o
     , output [ 7 :0]        FCTRs_o
 ) ;
 
-    reg     [15 :0] HCTRs   ;
-    reg     [15 :0] VCTRs   ;
+    reg     [ 9 :0] HCTRs   ;
+    reg     [ 8 :0] VCTRs   ;
     reg     [ 7 :0] FCTRs   ;
     reg     [ 7 :0] QQs_R    ;
     reg     [ 7 :0] QQs_G    ;
@@ -82,12 +82,12 @@ module TEST_PATTERN
                 HCTRs <= HCTRs + 1'b1 ;
             end else 
             begin
-                HCTRs <= 16'd0 ;
+                HCTRs <= 0 ;
                 if( ~ V_cy )
                     VCTRs <= VCTRs + 1'b1 ;
                 else 
                 begin
-                    VCTRs <= 16'd0 ;
+                    VCTRs <= 0 ;
                     FCTRs <= FCTRs + 1'b1 ;
                 end
             end

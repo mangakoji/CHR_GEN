@@ -4,6 +4,7 @@
 // license by BSD
 //      without font ROM data
 //
+//180701u       :append test_bench
 //180617s       :syntax check passed 
 //180426f       :mod for new coding rule
 //2018-03-12m   :mod net naming rule xxxs
@@ -201,9 +202,7 @@ module CHR_GEN
             if( VST_Ds[2] )
                 VBLK <= 1'b0 ;
             else if( &{VCTRs,HCTRs} )
-            begin
                 VBLK <= 1'b1 ;
-            end
 
             BLK_ADs <= {BLK_ADs[3 : 0] , (HBLK | VBLK)} ;
         end
@@ -298,7 +297,7 @@ module CHR_GEN
     assign fuchi_blanked = 
         (~
             (
-                BUS_FUCHI_MASK & BLK_Ds[1]
+                BUS_FUCHI_MASK | BLK_Ds[1]
             )
         ) & 
         (
@@ -343,3 +342,126 @@ module CHR_GEN
     assign FUCHI_o = FUCHI ;
 endmodule
 //CHR_GEN()
+
+
+
+
+`timescale 1ns/1ns
+module TB_CHAR_GEN
+#(
+    parameter C_C = 10.0
+)(
+) ;
+    reg CK ;
+    reg XAR ;
+    initial
+    begin
+        CK = 1 ;
+        forever
+            #(C_C * 0.5) CK <= ~CK ;
+    end
+    initial
+    begin
+       XAR = 1 ;
+        @(posedge CK) ;
+        @(posedge CK); 
+        #(C_C * 0.5) XAR <= 0 ;
+        @(posedge CK) ;
+        repeat(1)
+            @(posedge CK) ;
+        #(C_C * 0.1) XAR <= 1 ;
+    end
+
+    reg          CK_EE          ;
+    reg          XHD            ;
+    reg          XVD            ;
+    reg   [7:0]  VRAM_WDs       ;
+    reg   [9:0]  VRAM_WAs       ;
+    reg          VRAM_WE        ;
+    reg   [7:0]  CPU_VRAM_WDs   ;
+    reg   [9:0]  CPU_VRAM_WAs   ;
+    reg          CPU_VRAM_WE    ;
+    reg          BUS_OSD_CPU_USE;
+    reg          BUS_OSD_OFF    ;
+    reg   [11:0] BUS_H_DLYs     ;
+    reg   [10:0] BUS_V_DLYs     ;
+    reg   [2:0]  BUS_H_MAGs     ;
+    reg   [2:0]  BUS_V_MAGs     ;
+    reg   [7:0]  BUS_H_SCROLLs  ;
+    reg   [7:0]  BUS_V_SCROLLs  ;
+    reg          BUS_FUCHI_MASK ;
+    wire         CHAR           ;
+    wire         FUCHI          ; 
+
+
+    always@(posedge CK or negedge XAR)
+        if( ~ XAR)
+        begin
+            VRAM_WDs <= 0 ;
+            VRAM_WAs <= 0 ;
+            VRAM_WE <= 0 ;
+        end else if( CK_EE )
+        begin 
+            VRAM_WDs <= VRAM_WDs + 1 ;
+            VRAM_WAs <= VRAM_WAs + 1 ;
+            VRAM_WE <= 1 ;
+        end
+    CHR_GEN
+    CHR_GEN
+    (
+          .CK_i             ( CK            )
+        , .XAR_i            ( XAR           )
+        , .CK_EE_i          ( CK_EE          )
+        , .XHD_i            ( XHD            )
+        , .XVD_i            ( XVD            )
+        , .VRAM_WDs_i       ( VRAM_WDs       )
+        , .VRAM_WAs_i       ( VRAM_WAs       )
+        , .VRAM_WE_i        ( VRAM_WE        )
+//        , .CPU_VRAM_WDs_i   ( CPU_VRAM_WDs   )
+//        , .CPU_VRAM_WAs_i   ( CPU_VRAM_WAs   )
+//        , .CPU_VRAM_WE_i    ( CPU_VRAM_WE    )
+//        , .BUS_OSD_CPU_USE  ( BUS_OSD_CPU_USE)
+//        , .BUS_OSD_OFF      ( BUS_OSD_OFF    )
+//        , .BUS_H_DLYs       ( BUS_H_DLYs     )
+//        , .BUS_V_DLYs       ( BUS_V_DLYs     )
+//        , .BUS_H_MAGs       ( BUS_H_MAGs     )
+//        , .BUS_V_MAGs       ( BUS_V_MAGs     )
+//        , .BUS_H_SCROLLs    ( BUS_H_SCROLLs  )
+//        , .BUS_V_SCROLLs    ( BUS_V_SCROLLs  )
+        , .BUS_FUCHI_MASK   ( BUS_FUCHI_MASK )
+        , .CHAR_o           ( CHAR           )
+        , .FUCHI_o          ( FUCHI          )
+    ) ;                 
+    integer xx ;
+    integer yy ;
+    integer zz ;
+    initial
+    begin
+        CK_EE <= 1'b1 ;
+        XHD   <= 1'b1 ;
+        XVD   <= 1'b1 ;
+        BUS_FUCHI_MASK <= 0 ;
+        xx <= 0 ;
+        yy <= 0 ;
+        zz <= 0 ;
+        repeat(10) 
+            @(posedge CK) ;
+        for(zz=0;zz<2;zz=zz+1)
+        begin
+            for(yy=0;yy<525/2;yy=yy+1)
+            begin
+                for(xx=0;xx<910;xx=xx+1)
+                begin
+                    XHD <= ~ (xx < 10) ;
+                    XVD <= ~ (yy == 0) ;
+                    if(xx==0)
+                        BUS_FUCHI_MASK <= ~ BUS_FUCHI_MASK ;
+                    @(posedge CK) ;
+                end
+            end
+        end
+        $stop ;
+        $finish ;
+    end
+endmodule
+
